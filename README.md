@@ -2,6 +2,8 @@
 ### Intro
 - [English](README.md) | [中文](README_zh.md)
 
+## Self-use version, please do not spread, please do not harass the original author
+
 QOL Mod, powerful assists to vanilla gameplay. For destined Mindustry players.
 
 ### Install

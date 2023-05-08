@@ -18,6 +18,44 @@ public class MI2UVars{
         c.margin(6f);
     };
 
+    public static TextureRegionDrawable whiteuir;
+    public static Drawable black1;
+
+    public static TextButtonStyle
+    flattt,
+    clearLineNonet,
+    clearLineNoneTogglet;
+
+    public static void load(){
+        whiteuir = (TextureRegionDrawable)Tex.whiteui;
+
+        black1 = whiteuir.tint(0f, 0f, 0f, 0.1f);
+
+        flattt = new TextButtonStyle(){{
+            font = Fonts.def;
+            fontColor = Color.white;
+            down = flatOver;
+            up = black;
+            over = flatOver;
+            disabled = black;
+            disabledFontColor = Color.gray;
+        }};
+
+        clearLineNonet = new TextButtonStyle(flattt){{
+            up = none;
+            over = accentDrawable;
+            down = underlineWhite;
+        }};
+
+        clearLineNoneTogglet = new TextButtonStyle(fullTogglet){{
+            up = none;
+            over = accentDrawable;
+            down = underlineWhite;
+            checked = underlineWhite;
+            disabledFontColor = Color.white;
+        }};
+    }
+
     public static Seq<Mindow2> mindow2s = new Seq<>();
 
     public static FullAI fullAI = new FullAI();

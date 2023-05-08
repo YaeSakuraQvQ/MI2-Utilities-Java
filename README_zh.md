@@ -1,6 +1,8 @@
 # MI2-Utilities Java
 - [English](README.md) | [中文](README_zh.md)
 
+## 此为自用版，请勿传播，请勿骚扰原作者
+
 原版辅助工具, 有爱自取. 
 
 早期JS版: [BlackDeluxeCat/MI2-Utilities](https://github.com/BlackDeluxeCat/MI2-Utilities)

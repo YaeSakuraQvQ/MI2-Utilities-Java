@@ -139,13 +139,13 @@ public class Mindow2 extends Table{
 
             titleBar.button("" + Iconc.settings, textb, this::showSettings).size(titleButtonSize);
 
-            titleBar.button("-", textbtoggle, () -> {
+            titleBar.button("-", clearLineNoneTogglet, () -> {
                 minimized = !minimized;
                 cury += (minimized ? 1f : -1f) * cont.getHeight();
                 minimize();
             }).size(titleButtonSize).update(b -> b.setChecked(minimized));
         }else{
-            titleBar.button(titleText != null ? titleText : "-", textbtoggle, () -> {
+            titleBar.button(titleText != null ? titleText : "-", clearLineNoneTogglet, () -> {
                 minimized = !minimized;
                 cury += (minimized ? 1f : -1f) * cont.getHeight();
                 minimize();
@@ -447,14 +447,14 @@ public class Mindow2 extends Table{
                                     this.defaults().growX().height(40f);
                                     for(var m : mindow2s){
                                         if(m == Mindow2.this || m.parent != Mindow2.this.parent) continue;
-                                        this.button(Core.bundle.get(new StringBuilder(m.titleText).substring(1)) + "(" + m.mindowName + ")", textbtoggle, () -> {
+                                        this.button(Core.bundle.get(new StringBuilder(m.titleText).substring(1)) + "(" + m.mindowName + ")", clearLineNoneTogglet, () -> {
                                             MI2USettings.putStr(mindowName + ".abovesnapTarget", m.mindowName);
                                             aboveSnap = m;
                                             this.hide();
                                         }).with(funcSetTextb).get().setChecked(aboveSnap == m);
                                         this.row();
                                     }
-                                    this.button(Iconc.cancel + "null", textbtoggle, () -> {
+                                    this.button(Iconc.cancel + "null", clearLineNoneTogglet, () -> {
                                         MI2USettings.putStr(mindowName + ".abovesnapTarget", "null");
                                         aboveSnap = null;
                                         this.hide();
