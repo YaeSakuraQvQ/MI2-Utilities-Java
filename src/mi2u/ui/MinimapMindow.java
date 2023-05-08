@@ -61,11 +61,11 @@ public class MinimapMindow extends Mindow2{
         buttons = new PopupTable();
 
         buttons.defaults().height(32f).pad(2f).fillX();
-        buttons.button(Iconc.players + Core.bundle.get("minimap.buttons.label"), MI2UVars.clearLineNonet, () -> m.drawLabel = !m.drawLabel).update(b -> b.setChecked(m.drawLabel)).with(MI2UVars.funcSetclearLineNoneTogglet);
+        buttons.button(Iconc.players + Core.bundle.get("minimap.buttons.label"), MI2UVars.clearLineNonet, () -> m.drawLabel = !m.drawLabel).update(b -> b.setChecked(m.drawLabel)).with(MI2UVars.funcSetTextb);
         buttons.row();
-        buttons.button(Iconc.blockSpawn + Core.bundle.get("minimap.buttons.spawn"), MI2UVars.clearLineNonet, () -> m.drawSpawn = !m.drawSpawn).update(b -> b.setChecked(m.drawSpawn)).with(MI2UVars.funcSetclearLineNoneTogglet);
+        buttons.button(Iconc.blockSpawn + Core.bundle.get("minimap.buttons.spawn"), MI2UVars.clearLineNonet, () -> m.drawSpawn = !m.drawSpawn).update(b -> b.setChecked(m.drawSpawn)).with(MI2UVars.funcSetTextb);
         buttons.row();
-        buttons.button(Iconc.map + Core.bundle.get("minimap.buttons.fog"), MI2UVars.clearLineNonet, () -> m.drawFog = !m.drawFog).with(MI2UVars.funcSetclearLineNoneTogglet).update(b -> b.setChecked(m.drawFog)).get().getLabel().setColor(Color.slate);
+        buttons.button(Iconc.map + Core.bundle.get("minimap.buttons.fog"), MI2UVars.clearLineNonet, () -> m.drawFog = !m.drawFog).with(MI2UVars.funcSetTextb).update(b -> b.setChecked(m.drawFog)).get().getLabel().setColor(Color.slate);
 
         buttons.update(() -> buttons.hideWithoutFocusOn(this, buttons));
     }
