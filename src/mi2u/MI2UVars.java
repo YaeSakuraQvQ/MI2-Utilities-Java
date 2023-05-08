@@ -11,17 +11,12 @@ import mindustry.ui.*;
 
 public class MI2UVars{
     public static float titleButtonSize = 32f;
-    public static TextButtonStyle textb = Styles.flatt, textbtoggle = Styles.flatTogglet;
-    public static Cons<TextButton> funcSetTextb = c -> {
-        c.getLabel().setAlignment(Align.center);
-        c.getLabel().setWrap(false);
-        c.margin(6f);
-    };
-
     public static TextureRegionDrawable whiteuir;
     public static Drawable black1;
 
     public static TextButtonStyle
+    textb = Styles.flatt, 
+    textbtoggle = Styles.flatTogglet;
     flattt,
     clearLineNonet,
     clearLineNoneTogglet;
@@ -55,6 +50,11 @@ public class MI2UVars{
             disabledFontColor = Color.white;
         }};
     }
+    public static Cons<TextButton> funcSetTextb = c -> {
+        c.getLabel().setAlignment(Align.center);
+        c.getLabel().setWrap(false);
+        c.margin(6f);
+    };
 
     public static Seq<Mindow2> mindow2s = new Seq<>();
 
