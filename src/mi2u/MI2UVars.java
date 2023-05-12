@@ -24,7 +24,6 @@ public class MI2UVars{
     public static TextButtonStyle
     textb = Styles.flatt, 
     textbtoggle = Styles.flatTogglet;
-    public static TextButtonStyle
     flattt,
     clearLineNonet,
     clearLineNoneTogglet;
