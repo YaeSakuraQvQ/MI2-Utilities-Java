@@ -22,8 +22,8 @@ public class MI2UVars{
     public static Drawable black1;
 
     public static TextButtonStyle
-    textb = Styles.flatt, 
-    textbtoggle = Styles.flatTogglet,
+    textb, 
+    textbtoggle,
     flattt,
     clearLineNonet,
     clearLineNoneTogglet;
@@ -32,6 +32,9 @@ public class MI2UVars{
         whiteuir = (TextureRegionDrawable)Tex.whiteui;
 
         black1 = whiteuir.tint(0f, 0f, 0f, 0.1f);
+
+        textbtoggle = Styles.flatTogglet;
+        textb = Styles.flatt;
 
         flattt = new TextButtonStyle(){{
             font = Fonts.def;
