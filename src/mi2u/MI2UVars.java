@@ -17,7 +17,8 @@ public class MI2UVars{
     public static TextButtonStyle
     textb = Styles.flatt, 
     textbtoggle = Styles.flatTogglet;
-    flatt,
+    public static TextButtonStyle
+    flattt,
     clearLineNonet,
     clearLineNoneTogglet;
 
@@ -26,7 +27,7 @@ public class MI2UVars{
 
         black1 = whiteuir.tint(0f, 0f, 0f, 0.1f);
 
-        flatt = new TextButtonStyle(){{
+        flattt = new TextButtonStyle(){{
             font = Fonts.def;
             fontColor = Color.white;
             down = flatOver;
