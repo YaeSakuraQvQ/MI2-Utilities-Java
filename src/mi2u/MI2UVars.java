@@ -14,12 +14,19 @@ public class MI2UVars{
     public static TextureRegionDrawable whiteuir;
     public static Drawable black1;
 
+    public static TextButtonStyle
+    textb = Styles.flatt, 
+    textbtoggle = Styles.flatTogglet;
+    flatt,
+    clearLineNonet,
+    clearLineNoneTogglet;
+
     public static void load(){
         whiteuir = (TextureRegionDrawable)Tex.whiteui;
 
         black1 = whiteuir.tint(0f, 0f, 0f, 0.1f);
 
-        flattt = new TextButtonStyle(){{
+        flatt = new TextButtonStyle(){{
             font = Fonts.def;
             fontColor = Color.white;
             down = flatOver;
@@ -43,13 +50,6 @@ public class MI2UVars{
             disabledFontColor = Color.white;
         }};
     }
-    public static TextButtonStyle
-    textb = Styles.flatt, 
-    textbtoggle = Styles.flatTogglet;
-    flattt,
-    clearLineNonet,
-    clearLineNoneTogglet;
-
     public static Cons<TextButton> funcSetTextb = c -> {
         c.getLabel().setAlignment(Align.center);
         c.getLabel().setWrap(false);
