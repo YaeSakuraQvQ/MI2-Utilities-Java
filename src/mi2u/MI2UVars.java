@@ -13,6 +13,9 @@ import mi2u.ui.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
 
+import static mindustry.gen.Tex.underlineWhite;
+import static mindustry.ui.Styles.*;
+
 public class MI2UVars{
     public static float titleButtonSize = 32f;
     public static TextureRegionDrawable whiteuir;
