@@ -61,11 +61,11 @@ public class MinimapMindow extends Mindow2{
         buttons = new PopupTable();
 
         buttons.defaults().height(32f).pad(2f).fillX();
-        buttons.button(Iconc.players + Core.bundle.get("minimap.buttons.label"), MI2UVars.clearLineNonet, () -> m.drawLabel = !m.drawLabel).update(b -> b.setChecked(m.drawLabel)).with(MI2UVars.funcSetclearLineNoneTogglet);
+        buttons.button(Iconc.players + Core.bundle.get("minimap.buttons.label"), MI2UVars.textbtoggle, () -> m.drawLabel = !m.drawLabel).update(b -> b.setChecked(m.drawLabel)).with(MI2UVars.funcSetTextb);
         buttons.row();
-        buttons.button(Iconc.blockSpawn + Core.bundle.get("minimap.buttons.spawn"), MI2UVars.clearLineNonet, () -> m.drawSpawn = !m.drawSpawn).update(b -> b.setChecked(m.drawSpawn)).with(MI2UVars.funcSetclearLineNoneTogglet);
+        buttons.button(Iconc.blockSpawn + Core.bundle.get("minimap.buttons.spawn"), MI2UVars.textbtoggle, () -> m.drawSpawn = !m.drawSpawn).update(b -> b.setChecked(m.drawSpawn)).with(MI2UVars.funcSetTextb);
         buttons.row();
-        buttons.button(Iconc.map + Core.bundle.get("minimap.buttons.fog"), MI2UVars.clearLineNonet, () -> m.drawFog = !m.drawFog).with(MI2UVars.funcSetclearLineNoneTogglet).update(b -> b.setChecked(m.drawFog)).get().getLabel().setColor(Color.slate);
+        buttons.button(Iconc.map + Core.bundle.get("minimap.buttons.fog"), MI2UVars.textbtoggle, () -> m.drawFog = !m.drawFog).with(MI2UVars.funcSetTextb).update(b -> b.setChecked(m.drawFog)).get().getLabel().setColor(Color.slate);
 
         buttons.update(() -> buttons.hideWithoutFocusOn(this, buttons));
     }
@@ -84,19 +84,19 @@ public class MinimapMindow extends Mindow2{
                     tt.defaults().width(1f);
                     tt.label(() -> player.unit().type.emoji() + Strings.fixed(World.conv(player.x), 1) + ", "+ Strings.fixed(World.conv(player.y), 1)).get().setAlignment(Align.right);
                     tt.row();
-                    tt.label(() -> "♐" + Strings.fixed(World.conv(Core.input.mouseWorldX()), 1) + ", "+ Strings.fixed(World.conv(Core.input.mouseWorldY()), 1)).color(Color.lightgray).get().setAlignment(Align.right);
+                    tt.label(() -> "♐" + Strings.fixed(World.conv(Core.input.mouseWorldX()), 1) + ", "+ Strings.fixed(World.conv(Core.input.mouseWorldY()), 1)).color(Color.lightGray).get().setAlignment(Align.right);
                 }).right();
             };
             Cons<Table> b = tb -> {
                 tb.table(tt -> {
-                    tt.button(Iconc.logic + "", MI2UVars.clearLineNonet, () -> {
+                    tt.button(Iconc.logic + "", MI2UVars.textbtoggle, () -> {
                         catching = !catching;
                     }).width(32f).growY().checked(bt -> catching);
-                    tt.button(Iconc.zoom + "", MI2UVars.clearLineNoneTogglet, () -> {
+                    tt.button(Iconc.zoom + "", MI2UVars.textb, () -> {
                         finderTable.popup();
                         finderTable.setPositionInScreen(Core.input.mouseX(), Core.input.mouseY());
                     }).width(32f).growY();
-                    tt.button(Iconc.downOpen + "", MI2UVars.clearLineNoneTogglet, () -> {
+                    tt.button(Iconc.downOpen + "", MI2UVars.textb, () -> {
                         buttons.popup(Align.right);
                         buttons.setPositionInScreen(Core.input.mouseX(), Core.input.mouseY());
                     }).width(32f).growY();
