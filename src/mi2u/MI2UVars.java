@@ -1,6 +1,8 @@
 package mi2u;
 
 import arc.func.*;
+import arc.graphics.*;
+import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.TextButton.*;
 import arc.struct.*;
