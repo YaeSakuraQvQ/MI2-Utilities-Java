@@ -3,7 +3,6 @@ package mi2u.ui;
 import arc.*;
 import arc.func.*;
 import arc.graphics.*;
-import arc.graphics.Color;
 import arc.graphics.g2d.*;
 import arc.input.*;
 import arc.math.*;
@@ -85,7 +84,7 @@ public class MinimapMindow extends Mindow2{
                     tt.defaults().width(1f);
                     tt.label(() -> player.unit().type.emoji() + Strings.fixed(World.conv(player.x), 1) + ", "+ Strings.fixed(World.conv(player.y), 1)).get().setAlignment(Align.right);
                     tt.row();
-                    tt.label(() -> "♐" + Strings.fixed(World.conv(Core.input.mouseWorldX()), 1) + ", "+ Strings.fixed(World.conv(Core.input.mouseWorldY()), 1)).color(Color.lightgray).get().setAlignment(Align.right);
+                    tt.label(() -> "♐" + Strings.fixed(World.conv(Core.input.mouseWorldX()), 1) + ", "+ Strings.fixed(World.conv(Core.input.mouseWorldY()), 1)).color(Color.lightGray).get().setAlignment(Align.right);
                 }).right();
             };
             Cons<Table> b = tb -> {
