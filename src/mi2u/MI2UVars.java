@@ -9,6 +9,7 @@ import arc.struct.*;
 import arc.util.*;
 import mi2u.ai.*;
 import mi2u.ui.*;
+import mindustry.gen.*;
 import mindustry.ui.*;
 
 public class MI2UVars{
