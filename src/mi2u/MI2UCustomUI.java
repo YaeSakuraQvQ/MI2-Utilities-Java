@@ -10,7 +10,7 @@ import mindustry.ui.*;
 import static mindustry.gen.Tex.underlineWhite;
 import static mindustry.ui.Styles.*;
 
-public class RStyles{
+public class MI2UCustomUI{
     public static TextureRegionDrawable whiteuir;
     public static Drawable black1;
 
