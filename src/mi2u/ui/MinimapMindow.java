@@ -29,7 +29,7 @@ import mindustry.ui.*;
 import mindustry.world.Tile;
 
 import static mindustry.Vars.*;
-import static mi2u.MI2UCustomUI;
+
 
 public class MinimapMindow extends Mindow2{
     public static Minimap2 m = new Minimap2(200f);

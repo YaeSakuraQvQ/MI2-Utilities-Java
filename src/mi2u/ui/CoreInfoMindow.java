@@ -26,7 +26,7 @@ import mindustry.world.blocks.*;
 import mindustry.world.blocks.storage.CoreBlock.*;
 
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 import static mindustry.Vars.*;
 
 public class CoreInfoMindow extends Mindow2{

@@ -23,7 +23,7 @@ import mindustry.logic.LogicDialog;
 import mindustry.ui.Styles;
 
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 import static mindustry.Vars.*;
 
 public class LogicHelperMindow extends Mindow2{

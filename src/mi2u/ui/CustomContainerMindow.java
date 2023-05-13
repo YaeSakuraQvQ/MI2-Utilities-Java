@@ -14,7 +14,7 @@ import mindustry.input.Binding;
 import mindustry.ui.Styles;
 
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 import static mindustry.Vars.*;
 /** A temp custom mindow that catch any ui element into its container 
  * for fun

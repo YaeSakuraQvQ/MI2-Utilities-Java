@@ -15,7 +15,7 @@ import mi2u.MI2UCustomUI;
 import mindustry.*;
 import mindustry.gen.*;
 
-import static mi2u.MI2UCustomUI;
+
 
 public class PopupTable extends Table{
     public boolean shown = false;

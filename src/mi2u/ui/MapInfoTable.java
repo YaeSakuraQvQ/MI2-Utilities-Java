@@ -24,7 +24,7 @@ import mindustry.ui.dialogs.*;
 import mindustry.world.*;
 
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 import static mi2u.struct.UnitsData.*;
 import static mindustry.Vars.*;
 

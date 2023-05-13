@@ -14,7 +14,7 @@ import mindustry.ui.*;
 import mi2u.MI2UCustomUI;
 
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 
 import java.lang.reflect.*;
 

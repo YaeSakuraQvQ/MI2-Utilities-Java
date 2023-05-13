@@ -26,7 +26,7 @@ import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 /**  
  * Mindow2 is a dragable Table that partly works like a window. 
  * titleText is text shown on titleBar, set in constructor.

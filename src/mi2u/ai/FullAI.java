@@ -24,7 +24,7 @@ import mindustry.world.*;
 import mindustry.world.blocks.*;
 import mindustry.world.meta.*;
 
-import static mi2u.MI2UCustomUI;
+
 import static mindustry.Vars.*;
 import static mi2u.MI2UVars.*;
 

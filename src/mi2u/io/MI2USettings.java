@@ -24,7 +24,7 @@ import mindustry.ui.Styles;
 import mindustry.Vars;
 
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 
 public class MI2USettings{
 

@@ -19,7 +19,7 @@ import mindustry.gen.*;
 import mindustry.ui.*;
 
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 import static mindustry.Vars.*;
 
 public class MI2UI extends Mindow2{

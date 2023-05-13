@@ -27,7 +27,7 @@ import mindustry.world.blocks.production.*;
 import mindustry.world.consumers.*;
 
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 import static mindustry.Vars.*;
 
 /** modify vanilla game*/

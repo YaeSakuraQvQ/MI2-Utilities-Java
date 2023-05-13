@@ -25,7 +25,7 @@ import mindustry.ui.*;
 import mindustry.world.*;
 
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 import static mindustry.Vars.*;
 
 public class WorldFinderTable extends PopupTable{

@@ -30,7 +30,7 @@ import mi2u.MI2UCustomUI;
 
 import static mindustry.Vars.*;
 import static mi2u.MI2UVars.*;
-import static mi2u.MI2UCustomUI;
+
 
 public class BuildingStatsPopup<B extends Building> extends PopupTable{
     public static ObjectMap<Object, Cons> popNew = new ObjectMap<>();

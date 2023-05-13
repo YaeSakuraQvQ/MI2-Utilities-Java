@@ -19,7 +19,7 @@ import mindustry.ui.*;
 import java.util.regex.*;
 
 import static mindustry.Vars.*;
-import static mi2u.MI2UCustomUI;
+
 import static mi2u.MI2UVars.*;
 
 
