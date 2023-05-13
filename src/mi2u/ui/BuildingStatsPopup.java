@@ -26,9 +26,11 @@ import mindustry.logic.LExecutor;
 import mindustry.ui.Styles;
 import mindustry.world.blocks.logic.LogicBlock;
 import mindustry.world.blocks.logic.MessageBlock;
+import mi2u.MI2UCustomUI;
 
 import static mindustry.Vars.*;
 import static mi2u.MI2UVars.*;
+import static mi2u.MI2UCustomUI;
 
 public class BuildingStatsPopup<B extends Building> extends PopupTable{
     public static ObjectMap<Object, Cons> popNew = new ObjectMap<>();
@@ -102,20 +104,20 @@ public class BuildingStatsPopup<B extends Building> extends PopupTable{
             table(t -> {
                 t.background(Styles.black5);
                 t.defaults().width(20f);
-                t.button("<<", textb, () -> {
+                t.button("<<", clearLineNonet, () -> {
                     timerRate = Math.max(timerRate - 10, 1);
                 }).with(funcSetTextb);
-                t.button("<", textb, () -> {
+                t.button("<", clearLineNonet, () -> {
                     timerRate = Math.max(timerRate - 1, 1);
                 }).with(funcSetTextb);
                 t.label(() -> Iconc.settings + String.valueOf(timerRate)).width(60f);
-                t.button(">", textb, () -> {
+                t.button(">", clearLineNonet, () -> {
                     timerRate = Math.max(timerRate + 1, 1);
                 }).with(funcSetTextb);
-                t.button(">>", textb, () -> {
+                t.button(">>", clearLineNonet, () -> {
                     timerRate = Math.max(timerRate + 10, 1);
                 }).with(funcSetTextb);
-                t.button(Iconc.pause + "", textbtoggle, () -> {
+                t.button(Iconc.pause + "", clearLineNoneTogglet, () -> {
                     pause(!pause);
                 }).with(funcSetTextb).width(40f).padLeft(10f).checked(b -> pause);
             }).growX();

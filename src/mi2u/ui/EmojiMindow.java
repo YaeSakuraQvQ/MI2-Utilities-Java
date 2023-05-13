@@ -11,8 +11,10 @@ import arc.util.*;
 import mindustry.content.Blocks;
 import mindustry.gen.*;
 import mindustry.ui.*;
+import mi2u.MI2UCustomUI;
 
 import static mi2u.MI2UVars.*;
+import static mi2u.MI2UCustomUI;
 
 import java.lang.reflect.*;
 
@@ -51,7 +53,7 @@ public class EmojiMindow extends Mindow2{
                 if(f.getType() == char.class){
                     map.put(f.getName(), Reflect.get(Iconc.class, f) + "");
                     var emoji = map.get(f.getName());
-                    tablet.button(emoji, textb, () -> {
+                    tablet.button(emoji, clearLineNonet, () -> {
                         Core.app.setClipboardText(emoji);
                     }).with(funcSetTextb).get().getLabel().setFontScale(1.5f);
                     if(++tmpindex > 8){
@@ -68,7 +70,7 @@ public class EmojiMindow extends Mindow2{
                     Core.app.setClipboardText(name);
                 }).growX().with(funcSetTextb);
                 var emoji = map.get(name);
-                listt.button(emoji, textb, () -> {
+                listt.button(emoji, clearLineNonet, () -> {
                     Core.app.setClipboardText(emoji);
                 }).with(funcSetTextb).get().getLabel().setFontScale(1.5f);
                 listt.row();
@@ -80,7 +82,7 @@ public class EmojiMindow extends Mindow2{
     public void setupCont(Table cont){
         cont.clear();
         cont.table(t -> {
-            t.button("" + Iconc.list, textbtoggle, () -> {
+            t.button("" + Iconc.list, clearLineNoneTogglet, () -> {
                 listMode = !listMode;
                 rebuild();
             }).height(titleButtonSize).update(b -> {

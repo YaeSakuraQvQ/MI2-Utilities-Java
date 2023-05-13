@@ -12,6 +12,7 @@ import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import mi2u.*;
+import mi2u.MI2UCustomUI;
 import mi2u.input.*;
 import mi2u.struct.*;
 import mindustry.content.*;
@@ -23,6 +24,7 @@ import mindustry.ui.dialogs.*;
 import mindustry.world.*;
 
 import static mi2u.MI2UVars.*;
+import static mi2u.MI2UCustomUI;
 import static mi2u.struct.UnitsData.*;
 import static mindustry.Vars.*;
 
@@ -70,9 +72,9 @@ public class MapInfoTable extends Table{
         });
 
         //ui on MI2U
-        button("@mapInfo.buttons.allAttrs", textb , () -> mapAttsDialog.show()).with(funcSetTextb).growX();
+        button("@mapInfo.buttons.allAttrs", clearLineNonet , () -> mapAttsDialog.show()).with(funcSetTextb).growX();
         row();
-        button("@mapInfo.buttons.allWaves", textb, () -> {
+        button("@mapInfo.buttons.allWaves", clearLineNonet, () -> {
             wavesPopup.popup(Align.top);
             wavesPopup.snapTo(this);
             wavesPopup.keepInScreen();
@@ -92,39 +94,39 @@ public class MapInfoTable extends Table{
             t.label(() -> "Wave: " + (curWave + 1)).growX();
             t.row();
             t.table(t3 -> {
-                t3.button("@mapInfo.buttons.setWave", textb, () -> {
+                t3.button("@mapInfo.buttons.setWave", clearLineNonet, () -> {
                     curWave = Math.max(curWave, 0);
                     state.wave = curWave + 1;
                 }).with(funcSetTextb).with(b -> b.setDisabled(() -> net.client())).minSize(titleButtonSize);
-                t3.button("@mapInfo.buttons.forceRunWave", textb, () -> {
+                t3.button("@mapInfo.buttons.forceRunWave", clearLineNonet, () -> {
                     logic.runWave();
                 }).with(funcSetTextb).with(b -> b.setDisabled(() -> net.client())).height(titleButtonSize);
-                t3.button("" + Iconc.refresh, textbtoggle, () -> {
+                t3.button("" + Iconc.refresh, clearLineNoneTogglet, () -> {
                     if(state.rules.infiniteResources) state.rules.waveTimer = !state.rules.waveTimer;
                 }).update(b -> b.setChecked(state.rules.waveTimer)).with(funcSetTextb).with(b -> b.setDisabled(() -> net.client())).height(titleButtonSize);
             });
         }).growX().row();
 
         wavesPopup.table(t3 -> {
-            t3.button("<<", textb, () -> {
+            t3.button("<<", clearLineNonet, () -> {
                 syncCurWave = false;
                 curWave = Math.max(curWave - 10, 0);
             }).with(funcSetTextb).size(titleButtonSize);
-            t3.button("<", textb, () -> {
+            t3.button("<", clearLineNonet, () -> {
                 syncCurWave = false;
                 curWave = Math.max(curWave - 1, 0);
             }).with(funcSetTextb).size(titleButtonSize);
-            t3.button("O", textbtoggle, () -> {
+            t3.button("O", clearLineNoneTogglet, () -> {
                 syncCurWave = !syncCurWave;
             }).with(funcSetTextb).size(titleButtonSize).update(b -> {
                 b.setChecked(syncCurWave);
                 if(syncCurWave) curWave = Math.max(state.wave - 1, 0);
             });
-            t3.button(">", textb, () -> {
+            t3.button(">", clearLineNonet, () -> {
                 syncCurWave = false;
                 curWave = Math.max(curWave + 1, 0);
             }).with(funcSetTextb).size(titleButtonSize);
-            t3.button(">>", textb, () -> {
+            t3.button(">>", clearLineNonet, () -> {
                 syncCurWave = false;
                 curWave = Math.max(curWave + 10, 0);
             }).with(funcSetTextb).size(titleButtonSize);
@@ -140,8 +142,8 @@ public class MapInfoTable extends Table{
 
         wavesPopup.table(t4 -> {
             t4.defaults().fillY();
-            t4.button("@mapInfo.buttons.preview", textbtoggle, () -> showWaveDetail = !showWaveDetail).checked(showWaveDetail).with(funcSetTextb);
-            t4.button(Iconc.blockSpawn + Core.bundle.get("waves.spawn.all"), textb, null).growX().with(b -> {
+            t4.button("@mapInfo.buttons.preview", clearLineNoneTogglet, () -> showWaveDetail = !showWaveDetail).checked(showWaveDetail).with(funcSetTextb);
+            t4.button(Iconc.blockSpawn + Core.bundle.get("waves.spawn.all"), clearLineNonet, null).growX().with(b -> {
                 b.clicked(() -> {
                     var p = spawnerSelect;
                     p.clear();
@@ -410,19 +412,19 @@ public class MapInfoTable extends Table{
             t.table(tt -> {
                 tt.defaults().uniform().fill();
 
-                tt.button("@mapInfo.buttons.bannedBlocks", textb, () -> {
+                tt.button("@mapInfo.buttons.bannedBlocks", clearLineNonet, () -> {
                     showIterable("@mapInfo.buttons.bannedBlocks", state.rules.bannedBlocks, Block::isVisible, (block, table) -> {
                         table.image(block.uiIcon).size(32f);
                     });
                 }).with(funcSetTextb).disabled(b -> state.rules.bannedBlocks.isEmpty());
 
-                tt.button("@mapInfo.buttons.bannedUnits", textb, () -> {
+                tt.button("@mapInfo.buttons.bannedUnits", clearLineNonet, () -> {
                     showIterable("@mapInfo.buttons.bannedUnits", state.rules.bannedUnits, null, (unit, table) -> {
                         table.image(unit.uiIcon).size(32f);
                     });
                 }).with(funcSetTextb).disabled(b -> state.rules.bannedUnits.isEmpty());
 
-                tt.button("@mapInfo.buttons.hiddenBuildItems", textb, () -> {
+                tt.button("@mapInfo.buttons.hiddenBuildItems", clearLineNonet, () -> {
                     showIterable("@mapInfo.buttons.hiddenBuildItems", state.rules.hiddenBuildItems, null, (item, table) -> {
                         table.image(item.uiIcon).size(32f);
                     });
@@ -430,19 +432,19 @@ public class MapInfoTable extends Table{
 
                 tt.row();
 
-                tt.button("@mapInfo.buttons.revealedBlocks", textb, () -> {
+                tt.button("@mapInfo.buttons.revealedBlocks", clearLineNonet, () -> {
                     showIterable("@mapInfo.buttons.revealedBlocks", state.rules.revealedBlocks, null, (block, table) -> {
                         table.image(block.uiIcon).size(32f);
                     });
                 }).with(funcSetTextb).disabled(b -> state.rules.revealedBlocks.isEmpty());
 
-                tt.button("@mapInfo.buttons.objectiveFlags", textb, () -> {
+                tt.button("@mapInfo.buttons.objectiveFlags", clearLineNonet, () -> {
                     showIterable("@mapInfo.buttons.objectiveFlags", state.rules.objectiveFlags, null, (str, table) -> {
                         table.add(str).size(48f);
                     });
                 }).with(funcSetTextb).disabled(b -> state.rules.objectiveFlags.isEmpty());
 
-                tt.button("@mapInfo.buttons.mapTags", textb, () -> {
+                tt.button("@mapInfo.buttons.mapTags", clearLineNonet, () -> {
                     showIterable("@mapInfo.buttons.mapTags", state.rules.objectiveFlags, null, (str, table) -> {
                         table.add(str).size(48f);
                     });

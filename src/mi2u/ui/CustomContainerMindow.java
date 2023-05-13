@@ -7,12 +7,14 @@ import arc.scene.event.Touchable;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
+import mi2u.MI2UCustomUI;
 import mi2u.MI2UTmp;
 import mindustry.game.EventType.Trigger;
 import mindustry.input.Binding;
 import mindustry.ui.Styles;
 
 import static mi2u.MI2UVars.*;
+import static mi2u.MI2UCustomUI;
 import static mindustry.Vars.*;
 /** A temp custom mindow that catch any ui element into its container 
  * for fun
@@ -59,11 +61,11 @@ public class CustomContainerMindow extends Mindow2{
                 ticking = !ticking;
                 if(!ticking) tgt = null;
             }).width(50).name("SelectButton").update(b -> b.setChecked(ticking));
-            tt.button("->Parent", textb, () -> {
+            tt.button("->Parent", clearLineNonet, () -> {
                 if(tgt == null) return;
                 if(tgt.hasParent()) tgt = tgt.parent;
             }).width(50);
-            tt.button("+Capture", textb, () -> {
+            tt.button("+Capture", clearLineNonet, () -> {
                 if(tgt != null && !tgt.isDescendantOf(this)){
                     if(items.contains(i -> i.item == tgt)) return;
                     items.add(new ElementItem(tgt));
@@ -79,7 +81,7 @@ public class CustomContainerMindow extends Mindow2{
 
         if(items == null) return;
         items.each(item -> {
-            cont.button("x", textb, () -> {
+            cont.button("x", clearLineNonet, () -> {
                 item.originParent.addChild(item.item);
                 items.remove(i -> i.item == item.item);
                 rebuild();

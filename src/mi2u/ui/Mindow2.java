@@ -16,6 +16,7 @@ import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import mi2u.*;
+import mi2u.MI2UCustomUI;
 import mi2u.game.MI2UEvents;
 import mi2u.io.*;
 import mi2u.io.MI2USettings.*;
@@ -25,6 +26,7 @@ import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 
 import static mi2u.MI2UVars.*;
+import static mi2u.MI2UCustomUI;
 /**  
  * Mindow2 is a dragable Table that partly works like a window. 
  * titleText is text shown on titleBar, set in constructor.
@@ -137,15 +139,15 @@ public class Mindow2 extends Table{
         if(!minimized){
             titleBar.add(title).pad(0, 1, 0, 1);
 
-            titleBar.button("" + Iconc.settings, textb, this::showSettings).size(titleButtonSize);
+            titleBar.button("" + Iconc.settings, clearLineNonet, this::showSettings).size(titleButtonSize);
 
-            titleBar.button("-", textbtoggle, () -> {
+            titleBar.button("-", clearLineNoneTogglet, () -> {
                 minimized = !minimized;
                 cury += (minimized ? 1f : -1f) * cont.getHeight();
                 minimize();
             }).size(titleButtonSize).update(b -> b.setChecked(minimized));
         }else{
-            titleBar.button(titleText != null ? titleText : "-", textbtoggle, () -> {
+            titleBar.button(titleText != null ? titleText : "-", clearLineNoneTogglet, () -> {
                 minimized = !minimized;
                 cury += (minimized ? 1f : -1f) * cont.getHeight();
                 minimize();
@@ -248,7 +250,7 @@ public class Mindow2 extends Table{
                 this.cont.pane(t -> {
                     t.add(mindowName != null && !mindowName.equals("") ? Core.bundle.format("mindow2.settings.curMindowName") + mindowName: "@mindow2.settings.noMindowNameWarning").fontScale(1.2f).get().setAlignment(Align.center);
                     t.row();
-                    t.button("@mindow2.settings.help", Icon.info, () -> showHelp()).width(200f).get().setStyle(textb);
+                    t.button("@mindow2.settings.help", Icon.info, () -> showHelp()).width(200f).get().setStyle(clearLineNonet);
                     t.row();
                     settings.each(st -> {
                         t.table(st::build).width(Math.min(600, Core.graphics.getWidth())).left();
@@ -440,21 +442,21 @@ public class Mindow2 extends Table{
                         rightt.row();
 
                         rightt.table(t3 -> {
-                            var b = t3.button("@settings.mindow.abovesnapTarget", textb, null).growX().get();
+                            var b = t3.button("@settings.mindow.abovesnapTarget", clearLineNonet, null).growX().get();
                             b.clicked(() -> {
                                 new PopupTable(){{
                                     this.setBackground(Styles.black5);
                                     this.defaults().growX().height(40f);
                                     for(var m : mindow2s){
                                         if(m == Mindow2.this || m.parent != Mindow2.this.parent) continue;
-                                        this.button(Core.bundle.get(new StringBuilder(m.titleText).substring(1)) + "(" + m.mindowName + ")", textbtoggle, () -> {
+                                        this.button(Core.bundle.get(new StringBuilder(m.titleText).substring(1)) + "(" + m.mindowName + ")", clearLineNoneTogglet, () -> {
                                             MI2USettings.putStr(mindowName + ".abovesnapTarget", m.mindowName);
                                             aboveSnap = m;
                                             this.hide();
                                         }).with(funcSetTextb).get().setChecked(aboveSnap == m);
                                         this.row();
                                     }
-                                    this.button(Iconc.cancel + "null", textbtoggle, () -> {
+                                    this.button(Iconc.cancel + "null", clearLineNoneTogglet, () -> {
                                         MI2USettings.putStr(mindowName + ".abovesnapTarget", "null");
                                         aboveSnap = null;
                                         this.hide();
@@ -471,12 +473,12 @@ public class Mindow2 extends Table{
                         rightt.row();
 
                         rightt.table(ttt -> {
-                            ttt.button("@mindow2.settings.reloadUI", textb, Mindow2.this::loadUISettings).with(c -> {
+                            ttt.button("@mindow2.settings.reloadUI", clearLineNonet, Mindow2.this::loadUISettings).with(c -> {
                                 c.getLabel().setColor(1, 1, 0, 1);
                                 funcSetTextb.get(c);
                             }).growX();
 
-                            ttt.button("@mindow2.settings.cacheUI", textb, Mindow2.this::saveUISettings).with(c -> {
+                            ttt.button("@mindow2.settings.cacheUI", clearLineNonet, Mindow2.this::saveUISettings).with(c -> {
                                 c.getLabel().setColor(0, 0, 1, 1);
                                 funcSetTextb.get(c);
                             }).growX();

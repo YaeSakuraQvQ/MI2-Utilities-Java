@@ -11,8 +11,11 @@ import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
 import mi2u.*;
+import mi2u.MI2UCustomUI;
 import mindustry.*;
 import mindustry.gen.*;
+
+import static mi2u.MI2UCustomUI;
 
 public class PopupTable extends Table{
     public boolean shown = false;
@@ -99,7 +102,7 @@ public class PopupTable extends Table{
     }
 
     public void addCloseButton(float size){
-        TextButton b = new TextButton("" + Iconc.cancel, MI2UVars.textb){{clicked(() -> hide());}};
+        TextButton b = new TextButton("" + Iconc.cancel, MI2UVars.clearLineNonet){{clicked(() -> hide());}};
         b.setStyle(new TextButton.TextButtonStyle(b.getStyle()));
         b.getStyle().up = null;
         b.setSize(size);

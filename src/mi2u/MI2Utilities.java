@@ -6,6 +6,7 @@ import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
 import arc.util.serialization.*;
+import mi2u.MI2UCustomUI;
 import mi2u.graphics.*;
 import mi2u.input.*;
 import mi2u.io.*;
@@ -18,6 +19,7 @@ import mindustry.ui.*;
 import java.util.regex.*;
 
 import static mindustry.Vars.*;
+import static mi2u.MI2UCustomUI;
 import static mi2u.MI2UVars.*;
 
 
@@ -129,18 +131,18 @@ public class MI2Utilities extends Mod{
 
                 this.table(t -> {
                     t.label(() -> sign == 0 ? "@update.checking" : sign == -1 ? "@update.failCheck" : MOD.meta.version.equals(version) ? "@update.latest" : "@update.updateAvailable").align(Align.left).growX().pad(5f).get().setColor(0f, 1f, 0.3f, 1f);
-                    t.button("" + Iconc.refresh, textb, httpreq).disabled(tb -> sign != -1).size(32f);
+                    t.button("" + Iconc.refresh, clearLineNonet, httpreq).disabled(tb -> sign != -1).size(32f);
                 }).growX();
 
                 this.row();
 
-                this.button(gitRepo + "\n" + Iconc.paste + Iconc.github + "(copy url)", textb, () -> {
+                this.button(gitRepo + "\n" + Iconc.paste + Iconc.github + "(copy url)", clearLineNonet, () -> {
                     Core.app.setClipboardText(gitURL);
                 }).growX().height(50f).get().getLabel().setFontScale(0.5f);
 
                 this.row();
 
-                this.button("", textb, () -> ui.mods.githubImportMod(gitRepo, true)).growX().height(50f).update(b -> {
+                this.button("", clearLineNonet, () -> ui.mods.githubImportMod(gitRepo, true)).growX().height(50f).update(b -> {
                     b.setDisabled(() -> sign <= 0);
                     b.getLabelCell().update(l -> {
                         l.setText(Core.bundle.get("update.download") + ": " + MOD.meta.version + " -> " + version);
@@ -149,7 +151,7 @@ public class MI2Utilities extends Mod{
 
                 this.row();
 
-                this.button("", textb, this::hide).growX().height(50f).update(b -> {
+                this.button("", clearLineNonet, this::hide).growX().height(50f).update(b -> {
                     b.setText(Core.bundle.get("update.close") + " (" + Strings.fixed((delay - in.getTime(0)) / 60, 1) + "s)");
                 });
                 this.row();

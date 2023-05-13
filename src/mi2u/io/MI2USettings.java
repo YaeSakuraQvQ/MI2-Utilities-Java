@@ -14,6 +14,7 @@ import arc.scene.ui.layout.Table;
 import arc.struct.*;
 import arc.util.*;
 import arc.util.io.Writes;
+import mi2u.MI2UCustomUI;
 import mi2u.MI2UVars;
 import mi2u.game.MI2UEvents;
 import mi2u.ui.Mindow2;
@@ -23,6 +24,7 @@ import mindustry.ui.Styles;
 import mindustry.Vars;
 
 import static mi2u.MI2UVars.*;
+import static mi2u.MI2UCustomUI;
 
 public class MI2USettings{
 
@@ -252,7 +254,7 @@ public class MI2USettings{
         @Override
         public void build(Table table){
             if(table != null){
-                table.button(setting.name, textbtoggle, () -> {
+                table.button(setting.name, clearLineNoneTogglet, () -> {
                     value = !value;
                     setting.put(String.valueOf(value));
                     if(changed != null) changed.get(value);
@@ -273,7 +275,7 @@ public class MI2USettings{
 
         public Button newTextButton(String text){
             var b = new TextButton(text);
-            b.setStyle(textbtoggle);
+            b.setStyle(clearLineNoneTogglet);
             funcSetTextb.get(b);
             b.clicked(() -> {
                 value = !value;
@@ -352,7 +354,7 @@ public class MI2USettings{
                             it.defaults().growX().uniform();
                             int i = 0;
                             for(var item : items){
-                                it.button(buttonTextFunc != null ? buttonTextFunc.get(item) : item, textbtoggle, () -> {
+                                it.button(buttonTextFunc != null ? buttonTextFunc.get(item) : item, clearLineNoneTogglet, () -> {
                                     setting.put(item);
                                     if(changed != null) changed.get(item);
                                 }).with(funcSetTextb).update(b -> b.setChecked(setting.get().equals(item)));
@@ -425,7 +427,7 @@ public class MI2USettings{
 
         public void setDefaultHeader(String title){
             headBuilder = t -> {
-                var b = t.button(title, textbtoggle, null).growX().pad(0f,20f,0f,20f).height(36f).get();
+                var b = t.button(title, clearLineNoneTogglet, null).growX().pad(0f,20f,0f,20f).height(36f).get();
                 collapsep = () -> !b.isChecked();
             };
         }
