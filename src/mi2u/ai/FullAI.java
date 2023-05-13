@@ -7,7 +7,6 @@ import arc.math.geom.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
-import mi2u.MI2UCustomUI;
 import mi2u.MI2UTmp;
 import mi2u.input.*;
 import mi2u.io.*;
@@ -23,7 +22,6 @@ import mindustry.type.weapons.RepairBeamWeapon;
 import mindustry.world.*;
 import mindustry.world.blocks.*;
 import mindustry.world.meta.*;
-
 
 import static mindustry.Vars.*;
 import static mi2u.MI2UVars.*;
@@ -170,7 +168,7 @@ public class FullAI extends AIController{
                         b.image(item.uiIcon).size(16f);
                         b.add(item.localizedName);
                         b.margin(4f);
-                        }, clearLineNoneTogglet, () -> {
+                        }, textbtoggle, () -> {
                         if(list.contains(item)){
                             list.remove(item);
                         }else {
@@ -284,8 +282,8 @@ public class FullAI extends AIController{
         public void buildConfig(Table table) {
             super.buildConfig(table);
             table.table(t -> {
-                t.button("@ai.config.autorebuild", clearLineNoneTogglet, () -> rebuild = !rebuild).update(b -> b.setChecked(rebuild)).with(funcSetTextb);
-                t.button("@ai.config.follow", clearLineNoneTogglet, () -> follow = !follow).update(b -> b.setChecked(follow)).with(funcSetTextb);
+                t.button("@ai.config.autorebuild", textbtoggle, () -> rebuild = !rebuild).update(b -> b.setChecked(rebuild)).with(funcSetTextb);
+                t.button("@ai.config.follow", textbtoggle, () -> follow = !follow).update(b -> b.setChecked(follow)).with(funcSetTextb);
             }).growX();
 
         }
@@ -342,8 +340,8 @@ public class FullAI extends AIController{
         public void buildConfig(Table table) {
             super.buildConfig(table);
             table.table(t -> {
-                t.button("@ai.config.attack", clearLineNoneTogglet, () -> attack = !attack).update(b -> b.setChecked(attack)).with(funcSetTextb);
-                t.button("@ai.config.heal", clearLineNoneTogglet, () -> heal = !heal).update(b -> b.setChecked(heal)).with(funcSetTextb);
+                t.button("@ai.config.attack", textbtoggle, () -> attack = !attack).update(b -> b.setChecked(attack)).with(funcSetTextb);
+                t.button("@ai.config.heal", textbtoggle, () -> heal = !heal).update(b -> b.setChecked(heal)).with(funcSetTextb);
             }).growX();
         }
     }
@@ -400,7 +398,7 @@ public class FullAI extends AIController{
                             img.setColor(b.isDisabled() ? Color.gray : Color.white);
                         });
                         b.margin(4f);
-                    }, clearLineNoneTogglet, () -> {
+                    }, textbtoggle, () -> {
                         targetItem = targetItem == item ? null : item;
                     }).fill().checked(b -> targetItem == item).disabled(b -> {
                         var core = player.team().core();
@@ -414,7 +412,7 @@ public class FullAI extends AIController{
                 }
             }).maxHeight(300f).with(p -> p.setFadeScrollBars(false));
             table.row();
-            table.button("@ai.config.oneTime", clearLineNoneTogglet, () -> onetimePick = !onetimePick).growX().update(b -> b.setChecked(onetimePick)).with(funcSetTextb);
+            table.button("@ai.config.oneTime", textbtoggle, () -> onetimePick = !onetimePick).growX().update(b -> b.setChecked(onetimePick)).with(funcSetTextb);
         }
     }
 }

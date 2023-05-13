@@ -13,7 +13,6 @@ import arc.scene.ui.TextField;
 import arc.scene.ui.layout.*;
 import arc.util.*;
 import arc.util.pooling.*;
-import mi2u.MI2UCustomUI;
 import mi2u.MI2UTmp;
 import mi2u.MI2UVars;
 import mi2u.MI2Utils;
@@ -29,7 +28,6 @@ import mindustry.ui.*;
 import mindustry.world.Tile;
 
 import static mindustry.Vars.*;
-
 
 public class MinimapMindow extends Mindow2{
     public static Minimap2 m = new Minimap2(200f);
@@ -63,11 +61,11 @@ public class MinimapMindow extends Mindow2{
         buttons = new PopupTable();
 
         buttons.defaults().height(32f).pad(2f).fillX();
-        buttons.button(Iconc.players + Core.bundle.get("minimap.buttons.label"), MI2UVars.clearLineNoneTogglet, () -> m.drawLabel = !m.drawLabel).update(b -> b.setChecked(m.drawLabel)).with(MI2UVars.funcSetTextb);
+        buttons.button(Iconc.players + Core.bundle.get("minimap.buttons.label"), MI2UVars.textbtoggle, () -> m.drawLabel = !m.drawLabel).update(b -> b.setChecked(m.drawLabel)).with(MI2UVars.funcSetTextb);
         buttons.row();
-        buttons.button(Iconc.blockSpawn + Core.bundle.get("minimap.buttons.spawn"), MI2UVars.clearLineNoneTogglet, () -> m.drawSpawn = !m.drawSpawn).update(b -> b.setChecked(m.drawSpawn)).with(MI2UVars.funcSetTextb);
+        buttons.button(Iconc.blockSpawn + Core.bundle.get("minimap.buttons.spawn"), MI2UVars.textbtoggle, () -> m.drawSpawn = !m.drawSpawn).update(b -> b.setChecked(m.drawSpawn)).with(MI2UVars.funcSetTextb);
         buttons.row();
-        buttons.button(Iconc.map + Core.bundle.get("minimap.buttons.fog"), MI2UVars.clearLineNoneTogglet, () -> m.drawFog = !m.drawFog).with(MI2UVars.funcSetTextb).update(b -> b.setChecked(m.drawFog)).get().getLabel().setColor(Color.slate);
+        buttons.button(Iconc.map + Core.bundle.get("minimap.buttons.fog"), MI2UVars.textbtoggle, () -> m.drawFog = !m.drawFog).with(MI2UVars.funcSetTextb).update(b -> b.setChecked(m.drawFog)).get().getLabel().setColor(Color.slate);
 
         buttons.update(() -> buttons.hideWithoutFocusOn(this, buttons));
     }
@@ -91,14 +89,14 @@ public class MinimapMindow extends Mindow2{
             };
             Cons<Table> b = tb -> {
                 tb.table(tt -> {
-                    tt.button(Iconc.logic + "", MI2UVars.clearLineNoneTogglet, () -> {
+                    tt.button(Iconc.logic + "", MI2UVars.textbtoggle, () -> {
                         catching = !catching;
                     }).width(32f).growY().checked(bt -> catching);
-                    tt.button(Iconc.zoom + "", MI2UVars.clearLineNonet, () -> {
+                    tt.button(Iconc.zoom + "", MI2UVars.textb, () -> {
                         finderTable.popup();
                         finderTable.setPositionInScreen(Core.input.mouseX(), Core.input.mouseY());
                     }).width(32f).growY();
-                    tt.button(Iconc.downOpen + "", MI2UVars.clearLineNonet, () -> {
+                    tt.button(Iconc.downOpen + "", MI2UVars.textb, () -> {
                         buttons.popup(Align.right);
                         buttons.setPositionInScreen(Core.input.mouseX(), Core.input.mouseY());
                     }).width(32f).growY();

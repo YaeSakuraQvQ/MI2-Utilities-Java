@@ -13,7 +13,6 @@ import arc.scene.ui.TextField;
 import arc.scene.ui.layout.Table;
 import arc.struct.*;
 import arc.util.*;
-import mi2u.MI2UCustomUI;
 import mi2u.MI2UTmp;
 import mindustry.gen.Iconc;
 import mindustry.logic.LCanvas;
@@ -23,7 +22,6 @@ import mindustry.logic.LogicDialog;
 import mindustry.ui.Styles;
 
 import static mi2u.MI2UVars.*;
-
 import static mindustry.Vars.*;
 
 public class LogicHelperMindow extends Mindow2{
@@ -70,17 +68,17 @@ public class LogicHelperMindow extends Mindow2{
         cont.clear();
         cont.table(tt -> {
             tt.defaults().growX().minSize(48f);
-            tt.button("" + Iconc.list, clearLineNoneTogglet, () -> {
+            tt.button("" + Iconc.list, textbtoggle, () -> {
                 mode = Mode.vars;
                 setupCont(cont);
             }).update(b -> b.setChecked(mode == Mode.vars)).with(funcSetTextb);
 
-            tt.button("" + Iconc.zoom, clearLineNoneTogglet, () -> {
+            tt.button("" + Iconc.zoom, textbtoggle, () -> {
                 mode = Mode.search;
                 setupCont(cont);
             }).update(b -> b.setChecked(mode == Mode.search)).with(funcSetTextb);
 
-            tt.button("" + Iconc.paste, clearLineNoneTogglet, () -> {
+            tt.button("" + Iconc.paste, textbtoggle, () -> {
                 mode = Mode.cutPaste;
                 setupCont(cont);
             }).update(b -> b.setChecked(mode == Mode.cutPaste)).with(funcSetTextb);
@@ -119,17 +117,17 @@ public class LogicHelperMindow extends Mindow2{
 
         cont.table(t -> {
             t.defaults().growX();
-            t.button("" + Iconc.copy + Core.bundle.get("logicHelper.cutPaste.copyMode"), clearLineNoneTogglet, () -> {
+            t.button("" + Iconc.copy + Core.bundle.get("logicHelper.cutPaste.copyMode"), textbtoggle, () -> {
                 copyCode = !copyCode;
             }).update(b -> b.setChecked(copyCode)).with(funcSetTextb).height(36f);
 
-            t.button("" + Iconc.move + Core.bundle.get("logicHelper.cutPaste.transJump"), clearLineNoneTogglet, () -> {
+            t.button("" + Iconc.move + Core.bundle.get("logicHelper.cutPaste.transJump"), textbtoggle, () -> {
                 transJump = !transJump;
             }).update(b -> b.setChecked(transJump)).with(funcSetTextb).height(36f).disabled(tb -> !copyCode);
 
             t.row();
 
-            t.button("||| " + Iconc.play + " |||", clearLineNonet, this::doCutPaste).with(funcSetTextb).height(36f).disabled(tb -> !(parent instanceof LogicDialog ld && cutStart < ld.canvas.statements.getChildren().size && cutEnd < ld.canvas.statements.getChildren().size && pasteStart <= ld.canvas.statements.getChildren().size && cutEnd >= cutStart)).colspan(2);
+            t.button("||| " + Iconc.play + " |||", textb, this::doCutPaste).with(funcSetTextb).height(36f).disabled(tb -> !(parent instanceof LogicDialog ld && cutStart < ld.canvas.statements.getChildren().size && cutEnd < ld.canvas.statements.getChildren().size && pasteStart <= ld.canvas.statements.getChildren().size && cutEnd >= cutStart)).colspan(2);
         });
 
 
@@ -195,13 +193,13 @@ public class LogicHelperMindow extends Mindow2{
                 doSearch();
             }).fillX();
 
-            tt.button("Cc", clearLineNoneTogglet, () -> {
+            tt.button("Cc", textbtoggle, () -> {
                 caseMatch = !caseMatch;
                 doSearch();
                 locateElement(null);
             }).update(b -> b.setChecked(caseMatch)).with(funcSetTextb).size(36f);
 
-            tt.button("W", clearLineNoneTogglet, () -> {
+            tt.button("W", textbtoggle, () -> {
                 wholeWordsMatch = !wholeWordsMatch;
                 doSearch();
                 locateElement(null);
@@ -211,11 +209,11 @@ public class LogicHelperMindow extends Mindow2{
 
         cont.table(tt -> {
             tt.label(() -> "" + (results.isEmpty()?"NaN/0":(index+1)+"/"+results.size)).growX().get().setColor(Color.gray);
-            tt.button("" + Iconc.up + Core.bundle.get("logicHelper.search.prev"), clearLineNonet, () -> {
+            tt.button("" + Iconc.up + Core.bundle.get("logicHelper.search.prev"), textb, () -> {
                 index--;
                 locateElement(null);
             }).with(funcSetTextb).height(36f);
-            tt.button("" + Iconc.down + Core.bundle.get("logicHelper.search.next"), clearLineNonet, () -> {
+            tt.button("" + Iconc.down + Core.bundle.get("logicHelper.search.next"), textb, () -> {
                 index++;
                 locateElement(null);
             }).with(funcSetTextb).height(36f);
@@ -227,7 +225,7 @@ public class LogicHelperMindow extends Mindow2{
 
             tt.table(ttt -> {
                 ttt.defaults().fillX();
-                ttt.button("@logicHelper.search.replace", clearLineNonet, () -> {
+                ttt.button("@logicHelper.search.replace", textb, () -> {
                     if(results.isEmpty()) doSearch();
                     locateElement(e -> {
                         if(e instanceof TextField tf){
@@ -242,7 +240,7 @@ public class LogicHelperMindow extends Mindow2{
                 }).with(funcSetTextb).height(36f);
                 ttt.row();
 
-                ttt.button("@logicHelper.search.replaceAll", clearLineNonet, () -> {
+                ttt.button("@logicHelper.search.replaceAll", textb, () -> {
                     if(results.isEmpty()) doSearch();
                     results.each(e -> {
                         if(e instanceof TextField tf){
@@ -356,13 +354,13 @@ public class LogicHelperMindow extends Mindow2{
                 Sort.instance().sort(seq);
             
                 seq.each(s -> {
-                    tt.button("" + Iconc.paste, clearLineNonet, () -> Core.app.setClipboardText(s)).size(36,24);
+                    tt.button("" + Iconc.paste, textb, () -> Core.app.setClipboardText(s)).size(36,24);
             
                     String[] blocks = s.split(cookSplit(split), depth);
                     for(int bi = 0; bi < Math.min(depth, blocks.length); bi++){
                         //if(blocks[bi] == "") continue;
                         String str = blocks[bi] + (bi == blocks.length - 1 ? "":split);
-                        tt.button(str, clearLineNonet, () -> Core.app.setClipboardText(str)).left().with(c -> {
+                        tt.button(str, textb, () -> Core.app.setClipboardText(str)).left().with(c -> {
                             c.getLabel().setWrap(false);
                             c.getLabelCell().width(Math.min(c.getLabelCell().prefWidth(), 140));
                             c.getLabel().setWrap(true);
@@ -377,7 +375,7 @@ public class LogicHelperMindow extends Mindow2{
                 Sort.instance().sort(seq);
 
                 seq.each(s -> {
-                    tt.button(s, clearLineNonet, () -> Core.app.setClipboardText(s)).growX().get().getLabel().setAlignment(Align.left);
+                    tt.button(s, textb, () -> Core.app.setClipboardText(s)).growX().get().getLabel().setAlignment(Align.left);
                     tt.row();
                 });
             }

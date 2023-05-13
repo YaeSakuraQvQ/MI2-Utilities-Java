@@ -8,7 +8,6 @@ import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
 import mi2u.*;
-import mi2u.MI2UCustomUI;
 import mi2u.game.*;
 import mi2u.input.*;
 import mi2u.io.*;
@@ -19,7 +18,6 @@ import mindustry.gen.*;
 import mindustry.ui.*;
 
 import static mi2u.MI2UVars.*;
-
 import static mindustry.Vars.*;
 
 public class MI2UI extends Mindow2{
@@ -82,14 +80,14 @@ public class MI2UI extends Mindow2{
         cont.row();
 
         cont.table(tt -> {
-            tt.button("" + Iconc.refresh, clearLineNonet, () -> {
+            tt.button("" + Iconc.refresh, textb, () -> {
                 Call.sendChatMessage("/sync");
             }).minSize(36f).with(funcSetTextb);
 
-            tt.button("@main.buttons.rebuild", clearLineNonet, MI2UFuncs::unitRebuildBlocks).minSize(36f).with(funcSetTextb);
+            tt.button("@main.buttons.rebuild", textb, MI2UFuncs::unitRebuildBlocks).minSize(36f).with(funcSetTextb);
 
             //The update rate is based on button.update(), and affected by lagging
-            tt.button("Speeding", clearLineNoneTogglet, SpeedController::switchUpdate).update(b -> {
+            tt.button("Speeding", textbtoggle, SpeedController::switchUpdate).update(b -> {
                 b.setChecked(SpeedController.update);
                 b.setText(Core.bundle.get("main.buttons.speeding") + "x" + Strings.autoFixed(SpeedController.scl, 2));
                 SpeedController.update();
@@ -115,7 +113,7 @@ public class MI2UI extends Mindow2{
         cont.row();
 
         cont.table(tt -> {
-            tt.button("AI\n" + Iconc.settings, clearLineNonet, () -> {
+            tt.button("AI\n" + Iconc.settings, textb, () -> {
                 popup.clear();
                 popup.addCloseButton();
                 popup.addDragMove();
@@ -141,7 +139,7 @@ public class MI2UI extends Mindow2{
             }).grow().minSize(36f).with(funcSetTextb);
             tt.table(ttt -> {
                 fullAI.modes.each(mode -> {
-                    ttt.button(mode.btext, clearLineNoneTogglet, () -> {
+                    ttt.button(mode.btext, textbtoggle, () -> {
                         mode.enable = !mode.enable;
                     }).checked(b -> mode.enable).minSize(36f).with(c -> {
                         c.getLabel().setAlignment(Align.center);
@@ -153,7 +151,7 @@ public class MI2UI extends Mindow2{
         cont.row();
 
         cont.collapser(t -> {
-            t.button("@main.buttons.createForm", clearLineNoneTogglet, () -> {
+            t.button("@main.buttons.createForm", textbtoggle, () -> {
                 RtsCommand.creatingFormation = !RtsCommand.creatingFormation;
             }).checked(b -> RtsCommand.creatingFormation).minSize(36f).growX().with(c -> {
                 c.getLabel().setAlignment(Align.center);
@@ -164,7 +162,7 @@ public class MI2UI extends Mindow2{
                     int ii = i;
                     if(i == 5) tt.row();
 
-                    var button = tt.button("" + Mathf.mod(ii + 1, 10), clearLineNonet, () -> {
+                    var button = tt.button("" + Mathf.mod(ii + 1, 10), textb, () -> {
                         if(RtsCommand.creatingFormation){
                             RtsCommand.createFormation(Vars.control.input.selectedUnits, ii);
                         }else{

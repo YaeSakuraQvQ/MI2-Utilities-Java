@@ -12,7 +12,6 @@ import arc.scene.ui.layout.*;
 import arc.util.*;
 import mi2u.io.*;
 import mi2u.ui.*;
-import mi2u.MI2UCustomUI;
 import mindustry.core.*;
 import mindustry.game.*;
 import mindustry.gen.*;
@@ -27,7 +26,6 @@ import mindustry.world.blocks.production.*;
 import mindustry.world.consumers.*;
 
 import static mi2u.MI2UVars.*;
-
 import static mindustry.Vars.*;
 
 /** modify vanilla game*/
@@ -173,13 +171,13 @@ public class ModifyFuncs{
                 }
             });
             st.row();
-            st.button("@mi2u.settings.cleanUp", clearLineNonet, () -> {
+            st.button("@mi2u.settings.cleanUp", textb, () -> {
                 var dialog = new BaseDialog("@mi2u.settings.cleanUp");
                 dialog.addCloseButton();
                 dialog.buttons.button("@clear", Icon.refresh, () -> ui.showConfirm("@mi2u.settings.removeAllConf", MI2USettings.map::clear));
                 dialog.cont.pane(t -> {
                     MI2USettings.map.each((name, setting) -> {
-                        t.button("" + Iconc.cancel, clearLineNonet, null).size(24f).with(b -> {
+                        t.button("" + Iconc.cancel, textb, null).size(24f).with(b -> {
                             b.clicked(() -> ui.showConfirm(Core.bundle.get("mi2u.settings.removeConf") + name, () -> {
                                 MI2USettings.map.remove(name);
                                 MI2USettings.modified = true;

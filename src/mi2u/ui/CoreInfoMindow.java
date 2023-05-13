@@ -11,7 +11,6 @@ import arc.struct.*;
 import arc.util.*;
 import arc.util.pooling.*;
 import mi2u.*;
-import mi2u.MI2UCustomUI;
 import mi2u.input.*;
 import mi2u.io.*;
 import mi2u.io.MI2USettings.*;
@@ -26,7 +25,6 @@ import mindustry.world.blocks.*;
 import mindustry.world.blocks.storage.CoreBlock.*;
 
 import static mi2u.MI2UVars.*;
-
 import static mindustry.Vars.*;
 
 public class CoreInfoMindow extends Mindow2{
@@ -184,7 +182,7 @@ public class CoreInfoMindow extends Mindow2{
         cont.table(ipt -> {
             ipt.table(utt -> {
                 utt.image(Mindow2.white).width(48f).growY().update(i -> i.setColor(team.color));
-                utt.button("Select", clearLineNonet, () -> {
+                utt.button("Select", textb, () -> {
                     rebuildSelect();
                     teamSelect.popup();
                     teamSelect.snapTo(this);
@@ -192,7 +190,7 @@ public class CoreInfoMindow extends Mindow2{
                     b.setText(Core.bundle.get("coreInfo.selectButton.team") + team.localized() + (select == null ? Core.bundle.get("coreInfo.selectButton.playerteam"):""));
                     b.getLabel().setColor(team == null ? Color.white:team.color);
                 });
-                utt.button(itemTimerInt + "s", clearLineNonet, null).size(48f).with(b -> {
+                utt.button(itemTimerInt + "s", textb, null).size(48f).with(b -> {
                     b.clicked(() -> {
                         switch(itemTimerInt){
                             case 1 -> itemTimerInt = 10;
@@ -373,7 +371,7 @@ public class CoreInfoMindow extends Mindow2{
     public void rebuildSelect(){
         teamSelect.clear();
         teamSelect.table(p -> {
-            p.button(Iconc.players + "", clearLineNonet, () -> {
+            p.button(Iconc.players + "", textb, () -> {
                 select = null;
                 rebuild();
                 teamSelect.hide();
@@ -383,7 +381,7 @@ public class CoreInfoMindow extends Mindow2{
             });
             int i = 1;
             for(TeamData t : state.teams.getActive()){
-                p.button(t.team.localized(), clearLineNonet, () -> {
+                p.button(t.team.localized(), textb, () -> {
                     select = t.team;
                     rebuild();
                     teamSelect.hide();

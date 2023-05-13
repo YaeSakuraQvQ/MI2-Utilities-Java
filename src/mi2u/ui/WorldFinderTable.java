@@ -12,7 +12,6 @@ import arc.scene.ui.Label;
 import arc.scene.ui.layout.*;
 import arc.util.*;
 import mi2u.*;
-import mi2u.MI2UCustomUI;
 import mi2u.input.*;
 import mi2u.io.MI2USettings;
 import mi2u.struct.*;
@@ -25,7 +24,6 @@ import mindustry.ui.*;
 import mindustry.world.*;
 
 import static mi2u.MI2UVars.*;
-
 import static mindustry.Vars.*;
 
 public class WorldFinderTable extends PopupTable{
@@ -62,7 +60,7 @@ public class WorldFinderTable extends PopupTable{
 
         table(t -> {
             t.defaults().growY();
-            t.button("", clearLineNonet, () -> {
+            t.button("", textb, () -> {
                 showSubTableID = 0;
                 setupSelect();
             }).minSize(size*2f, size).update(b -> b.setText(find.localizedName)).with(funcSetTextb).with(b -> {
@@ -70,7 +68,7 @@ public class WorldFinderTable extends PopupTable{
                 b.getCells().reverse();
             });
 
-            t.button("", clearLineNonet, () -> {
+            t.button("", textb, () -> {
                 showSubTableID = 2;
                 setupSelect();
             }).minSize(size*2f, size).update(b -> {
@@ -82,19 +80,19 @@ public class WorldFinderTable extends PopupTable{
         row();
         //finder button
         table(t -> {
-            t.button(Iconc.zoom + "+1", clearLineNonet, () -> {
+            t.button(Iconc.zoom + "+1", textb, () -> {
                 finder.team = team;
                 finder.findTarget = find;
                 int pos = finder.findNext();
                 if(pos != -1 && control.input instanceof InputOverwrite ipo) ipo.pan(true, MI2UTmp.v1.set(Point2.x(pos), Point2.y(pos)).scl(tilesize));
             }).height(size).with(funcSetTextb);
-            t.button("+20", clearLineNonet, () -> {
+            t.button("+20", textb, () -> {
                 finder.team = team;
                 finder.findTarget = find;
                 int pos = finder.findNext(20);
                 if(pos != -1 && control.input instanceof InputOverwrite ipo) ipo.pan(true, MI2UTmp.v1.set(Point2.x(pos), Point2.y(pos)).scl(tilesize));
             }).height(size).with(funcSetTextb);
-            t.button("+2%", clearLineNonet, () -> {
+            t.button("+2%", textb, () -> {
                 finder.team = team;
                 finder.findTarget = find;
                 int pos = finder.findNext(Mathf.floor(WorldData.countBlock(find, team) * 0.01f));
@@ -108,7 +106,7 @@ public class WorldFinderTable extends PopupTable{
         add("@minimap.finder.replace").color(Color.sky).left().growX();
         row();
 
-        button("", clearLineNonet, () -> {
+        button("", textb, () -> {
             showSubTableID = 1;
             setupSelect();
         }).minSize(size*2f, size).update(b -> b.setText(replace.localizedName)).with(funcSetTextb).with(b -> {
@@ -120,17 +118,17 @@ public class WorldFinderTable extends PopupTable{
 
         table(t -> {
             t.defaults().growX();
-            t.button("@minimap.finder.unitPos", clearLineNonet, () -> {
+            t.button("@minimap.finder.unitPos", textb, () -> {
                 planReplace(find, replace, 8f);
             }).height(size).with(funcSetTextb);
-            t.button("@minimap.finder.unitRange", clearLineNonet, () -> {
+            t.button("@minimap.finder.unitRange", textb, () -> {
                 planReplace(find, replace, player.unit().range());
             }).height(size).with(funcSetTextb);
             t.row();
-            t.button("@minimap.finder.buildRange", clearLineNonet, () -> {
+            t.button("@minimap.finder.buildRange", textb, () -> {
                 planReplace(find, replace, buildingRange);
             }).height(size).with(funcSetTextb);
-            t.button("@minimap.finder.mapRange", clearLineNonet, () -> {
+            t.button("@minimap.finder.mapRange", textb, () -> {
                 planReplace(find, replace, -1f);
             }).height(size).with(funcSetTextb);
         }).grow();
@@ -171,7 +169,7 @@ public class WorldFinderTable extends PopupTable{
             //block selection
             case 0 -> {
                 if(!MI2USettings.getBool("worldDataUpdate")) WorldData.scanWorld();
-                selectTable.button("@minimap.finder.showBlockNames", clearLineNoneTogglet, null).height(36f).growX().with(funcSetTextb).with(b -> {
+                selectTable.button("@minimap.finder.showBlockNames", textbtoggle, null).height(36f).growX().with(funcSetTextb).with(b -> {
                     b.clicked(() -> {
                         withName = !withName;
                         setupSelect();
@@ -186,7 +184,7 @@ public class WorldFinderTable extends PopupTable{
                     for(var block : content.blocks()){
                         if(WorldData.countBlock(block, null) <= 0) continue;
                         if(withName){
-                            t.button("" + block.localizedName, new TextureRegionDrawable(block.uiIcon), clearLineNonet, 24f,() -> {
+                            t.button("" + block.localizedName, new TextureRegionDrawable(block.uiIcon), textb, 24f,() -> {
                                 find = block;
                                 finder.findTarget = find;
                                 finder.findIndex = 0;
@@ -198,7 +196,7 @@ public class WorldFinderTable extends PopupTable{
                                 this.setFillParent(true);
                                 this.setFontScale(count >= 1000 ? 0.5f : 0.8f);
                                 this.setAlignment(Align.bottomRight);
-                            }}), clearLineNonet,() -> {
+                            }}), textb,() -> {
                                 find = block;
                                 finder.findTarget = find;
                                 finder.findIndex = 0;
@@ -222,7 +220,7 @@ public class WorldFinderTable extends PopupTable{
             //replace block selection
             case 1 -> {
                 if(!MI2USettings.getBool("worldDataUpdate")) WorldData.scanWorld();
-                selectTable.button("@minimap.finder.showBlockNames", clearLineNoneTogglet, null).height(36f).growX().with(funcSetTextb).with(b -> {
+                selectTable.button("@minimap.finder.showBlockNames", textbtoggle, null).height(36f).growX().with(funcSetTextb).with(b -> {
                     b.clicked(() -> {
                         withName = !withName;
                         setupSelect();
@@ -238,7 +236,7 @@ public class WorldFinderTable extends PopupTable{
                         if(!block.canReplace(find) && block != Blocks.air) continue;
                         //if(block.isHidden() && (!state.rules.infiniteResources || !state.isEditor())) continue;
                         if(withName){
-                            t.button("" + block.localizedName, new TextureRegionDrawable(block.uiIcon), clearLineNonet, 24f,() -> {
+                            t.button("" + block.localizedName, new TextureRegionDrawable(block.uiIcon), textb, 24f,() -> {
                                 replace = block;
                             }).with(funcSetTextb);
                         }else{
@@ -248,7 +246,7 @@ public class WorldFinderTable extends PopupTable{
                                 this.setFillParent(true);
                                 this.setFontScale(count >= 1000 ? 0.5f : 0.8f);
                                 this.setAlignment(Align.bottomRight);
-                            }}), clearLineNonet,() -> {
+                            }}), textb,() -> {
                                 replace = block;
                             }).size(32f).pad(2f);
                         }
@@ -269,7 +267,7 @@ public class WorldFinderTable extends PopupTable{
 
             //team selection
             case 2 -> {
-                selectTable.button("" + Iconc.map, clearLineNonet, () -> {
+                selectTable.button("" + Iconc.map, textb, () -> {
                     team = null;
                 }).minSize(titleButtonSize * 2f).disabled(b -> team == null).with(b -> {
                     b.getLabel().setWrap(false);
@@ -278,7 +276,7 @@ public class WorldFinderTable extends PopupTable{
                 for(int i = 0; i < 256; i++){
                     var team0 = Team.all[i];
                     if(team0.data().buildings.size > 0){
-                        selectTable.button(team0.localized(), clearLineNonet, () -> {
+                        selectTable.button(team0.localized(), textb, () -> {
                             team = team0;
                         }).minSize(titleButtonSize * 2f).disabled(b -> team == team0).with(b -> {
                             b.getLabel().setWrap(false);
