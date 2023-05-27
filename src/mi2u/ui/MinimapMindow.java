@@ -78,15 +78,15 @@ public class MinimapMindow extends Mindow2{
         cont.add(m);
         cont.row();
         cont.table(t -> {
+            t.add().growX();//let coords being right align
             Cons<Table> l = tl -> {
                 tl.table(tt -> {
                     tt.defaults().width(1f);
-                    tt.label(() -> player.unit().type.emoji() + Strings.fixed(World.conv(player.x), 1) + ", "+ Strings.fixed(World.conv(player.y), 1)).get().setAlignment(Align.left);
+                    tt.label(() -> player.unit().type.emoji() + Strings.fixed(World.conv(player.x), 1) + ", "+ Strings.fixed(World.conv(player.y), 1)).get().setAlignment(Align.right);
                     tt.row();
-                    tt.label(() -> "♐" + Strings.fixed(World.conv(Core.input.mouseWorldX()), 1) + ", "+ Strings.fixed(World.conv(Core.input.mouseWorldY()), 1)).color(Color.lightGray).get().setAlignment(Align.left);
-                }).left();
+                    tt.label(() -> "♐" + Strings.fixed(World.conv(Core.input.mouseWorldX()), 1) + ", "+ Strings.fixed(World.conv(Core.input.mouseWorldY()), 1)).color(Color.lightGray).get().setAlignment(Align.right);
+                }).right();
             };
-            t.add().growX();//let coords being right align
             Cons<Table> b = tb -> {
                 tb.table(tt -> {
                     tt.button(Iconc.logic + "", MI2UVars.textbtoggle, () -> {
