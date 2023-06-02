@@ -181,16 +181,16 @@ public class CoreInfoMindow extends Mindow2{
         cont.clear();
         cont.table(ipt -> {
             ipt.table(utt -> {
-                utt.image(Mindow2.white).width(35f).growY().update(i -> i.setColor(team.color));
+                utt.image(Mindow2.white).width(20f).growY().update(i -> i.setColor(team.color));
                 utt.button("Select", textb, () -> {
                     rebuildSelect();
                     teamSelect.popup();
                     teamSelect.snapTo(this);
-                }).growX().height(35f).update(b -> {
+                }).growX().height(20f).update(b -> {
                     b.setText(Core.bundle.get("coreInfo.selectButton.team") + team.localized() + (select == null ? Core.bundle.get("coreInfo.selectButton.playerteam"):""));
                     b.getLabel().setColor(team == null ? Color.white:team.color);
                 });
-                utt.button(itemTimerInt + "s", textb, null).size(35f).with(b -> {
+                utt.button(itemTimerInt + "s", textb, null).size(20f).with(b -> {
                     b.clicked(() -> {
                         switch(itemTimerInt){
                             case 1 -> itemTimerInt = 10;
