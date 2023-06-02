@@ -326,7 +326,7 @@ public class Mindow2 extends Table{
 
     public static void initMindowStyles(){
         var whiteui = (TextureRegionDrawable)Tex.whiteui;
-        titleBarbgNormal = whiteui.tint(0.97f, 0.66f, 0.8f, 0.5f);
+        titleBarbgNormal = whiteui.tint(0.97f, 0.66f, 0.8f, 0.8f);
         titleBarbgSnapped = whiteui.tint(0.97f, 0.66f, 0.8f, 0.2f);
         white = whiteui.tint(1f, 1f, 1f, 1f);
         gray2 = whiteui.tint(0.2f, 0.2f, 0.2f, 1f);
