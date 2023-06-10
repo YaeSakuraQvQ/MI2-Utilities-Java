@@ -15,7 +15,6 @@ import mi2u.ui.*;
 import mindustry.ai.*;
 import mindustry.ai.types.*;
 import mindustry.content.*;
-import mindustry.core.*;
 import mindustry.entities.units.*;
 import mindustry.game.*;
 import mindustry.gen.*;
@@ -49,7 +48,7 @@ public class RendererExt{
             lexecTimer = MI2Utils.getField(LExecutor.class, "unitTimeouts");
 
     public static boolean animatedshields;
-    public static boolean enPlayerCursor, enUnitHitbox, enUnitHpBar, enUnitRangeZone, enOverdriveZone, enMenderZone, enTurretZone, enBlockHpBar, enDistributionReveal, drevealBridge, drevealJunction, drevealUnloader, drevealInventory, enSpawnZone, disableWreck, disableUnit, disableBuilding, disableBullet, shadow;
+    public static boolean enPlayerCursor, enUnitHitbox, enUnitHpBar, enUnitHpBarDamagedOnly, enUnitRangeZone, enOverdriveZone, enMenderZone, enTurretZone, enBlockHpBar, enDistributionReveal, drevealBridge, drevealJunction, drevealUnloader, drevealInventory, enSpawnZone, disableWreck, disableUnit, disableBuilding, disableBullet, shadow;
     public static float flashZoneAlpha;
 
     public static void initBase(){
@@ -78,6 +77,7 @@ public class RendererExt{
         enPlayerCursor = MI2USettings.getBool("enPlayerCursor", false);
         enUnitHitbox = MI2USettings.getBool("enUnitHitbox");
         enUnitHpBar = MI2USettings.getBool("enUnitHpBar");
+        enUnitHpBarDamagedOnly = MI2USettings.getBool("enUnitHpBarDamagedOnly");
         enUnitRangeZone = MI2USettings.getBool("enUnitRangeZone", false);
         enOverdriveZone = MI2USettings.getBool("enOverdriveZone", false);
         enMenderZone = MI2USettings.getBool("enMenderZone", false);
@@ -228,7 +228,7 @@ public class RendererExt{
         if(Math.abs(unit.x - Core.camera.position.x) <= (Core.camera.width / 2) && Math.abs(unit.y - Core.camera.position.y) <= (Core.camera.height / 2)){
             //display healthbar by MI2
             Draw.z(Layer.shields + 6f);
-            if(enUnitHpBar){
+            if(enUnitHpBar && (unit.shield > Math.min(0.5f * unit.maxHealth, 100f) || !enUnitHpBarDamagedOnly || unit.damaged())){
                 drawUnitHpBar(unit);
             }
 
@@ -361,8 +361,8 @@ public class RendererExt{
         float width = 1.2f, halfwidth = width / 2f;
 
         if(unit.hitTime > 0f){
-            Lines.stroke(4f + Mathf.lerp(0f, 2f, Mathf.clamp(unit.hitTime)));
-            Draw.color(Color.white, Mathf.lerp(0.1f, 1f, Mathf.clamp(unit.hitTime)));
+            Lines.stroke(4f + Mathf.lerp(0f, 2f, unit.hitTime));
+            Draw.color(Color.white, Mathf.lerp(0.1f, 1f, unit.hitTime));
             Lines.line(unit.x - unit.hitSize * halfwidth, unit.y + (unit.hitSize / 2f), unit.x + unit.hitSize * halfwidth, unit.y + (unit.hitSize / 2f));
         }
 
@@ -749,27 +749,20 @@ public class RendererExt{
                 Draw.z(Layer.block + 1f);
 
                 Vec2 off = MI2UTmp.v1, end = MI2UTmp.v2;
-                //line length: sum of block sizes sub xy distance
-                end.set(ub).sub(fromb);
-                end.x = (ub.block.size + fromb.block.size) * tilesize / 2f - Math.abs(end.x);
-                end.y = (ub.block.size + fromb.block.size) * tilesize / 2f - Math.abs(end.y);
-                //line offset: coords greater block xy - block size
-                off.x = ub.x > fromb.x ? ub.x - ub.block.size * tilesize / 2f : fromb.x - fromb.block.size * tilesize / 2f;
-                off.y = ub.y > fromb.y ? ub.y - ub.block.size * tilesize / 2f : fromb.y - fromb.block.size * tilesize / 2f;
-                end.add(off);
+                //im a dumbness. just think the two blocks as intervals, and get their intersection.
+                end.x = Math.min(ub.x + ub.block.size * tilesize / 2f, fromb.x + fromb.block.size * tilesize / 2f);
+                end.y = Math.min(ub.y + ub.block.size * tilesize / 2f, fromb.y + fromb.block.size * tilesize / 2f);
+                off.x = Math.max(ub.x - ub.block.size * tilesize / 2f, fromb.x - fromb.block.size * tilesize / 2f);
+                off.y = Math.max(ub.y - ub.block.size * tilesize / 2f, fromb.y - fromb.block.size * tilesize / 2f);
 
                 Draw.color(Pal.placing, ub.unloadTimer < block.speed ? 1f : 0.25f);
                 Lines.stroke(1.5f);
                 Lines.line(off.x, off.y, end.x, end.y);
 
-                //line length: sum of block sizes sub xy distance
-                end.set(ub).sub(tob);
-                end.x = (ub.block.size + tob.block.size) * tilesize / 2f - Math.abs(end.x);
-                end.y = (ub.block.size + tob.block.size) * tilesize / 2f - Math.abs(end.y);
-                //line offset: coords greater block xy - block size
-                off.x = ub.x > tob.x ? ub.x - ub.block.size * tilesize / 2f : tob.x - tob.block.size * tilesize / 2f;
-                off.y = ub.y > tob.y ? ub.y - ub.block.size * tilesize / 2f : tob.y - tob.block.size * tilesize / 2f;
-                end.add(off);
+                end.x = Math.min(ub.x + ub.block.size * tilesize / 2f, tob.x + tob.block.size * tilesize / 2f);
+                end.y = Math.min(ub.y + ub.block.size * tilesize / 2f, tob.y + tob.block.size * tilesize / 2f);
+                off.x = Math.max(ub.x - ub.block.size * tilesize / 2f, tob.x - tob.block.size * tilesize / 2f);
+                off.y = Math.max(ub.y - ub.block.size * tilesize / 2f, tob.y - tob.block.size * tilesize / 2f);
 
                 Draw.color(Pal.remove, ub.unloadTimer < block.speed ? 1f : 0.25f);
                 Lines.stroke(1.5f);
