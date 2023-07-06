@@ -16,6 +16,7 @@ import mindustry.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
+import mindustry.world.blocks.*;
 
 import static mi2u.MI2UVars.*;
 import static mindustry.Vars.*;
@@ -38,6 +39,19 @@ public class MI2UI extends Mindow2{
                 runTime += Time.timeSinceMillis(lastRunTime);
                 lastRealRun = Time.millis();
                 lastRunTime = Time.millis();
+
+                if(state.rules.mode() == Gamemode.sandbox && !net.active() && state.isGame() && !state.isPaused() && player.unit() != null && MI2USettings.getBool("instantBuild", true)){
+                    player.unit().plans.each(bp -> {
+                        var tile = world.tiles.getc(bp.x, bp.y);
+                        if(bp.breaking){
+                            tile.setAir();
+                        }else{
+                            Call.beginPlace(player.unit(), bp.block, player.team(), bp.x, bp.y, bp.rotation);
+                            if(bp.tile().build instanceof ConstructBlock.ConstructBuild cb) cb.construct(player.unit(), null, 1f, bp.config);
+                            player.unit().plans.remove(bp);
+                        }
+                    });
+                }
             }
         });
 
@@ -102,12 +116,12 @@ public class MI2UI extends Mindow2{
                         else img.setRotation(0f);
                         img.setColor(!b.isChecked() ? Color.white : SpeedController.lowerThanMin() ? Color.scarlet : Color.lime);
                     }).left();
-                    bii.add().growX();
-                }).growX();
+                    bii.add().grow();
+                }).grow();
                 b.getLabelCell().expand(false, false).fill(false).width(0.5f);
                 b.getLabel().setAlignment(Align.right);
                 b.getCells().swap(0,1);
-            }).growX();
+            }).grow();
         }).fillX();
 
         cont.row();
@@ -141,7 +155,7 @@ public class MI2UI extends Mindow2{
                 fullAI.modes.each(mode -> {
                     ttt.button(mode.btext, textbtoggle, () -> {
                         mode.enable = !mode.enable;
-                    }).checked(b -> mode.enable).minSize(36f).with(c -> {
+                    }).checked(b -> mode.enable).minSize(32f).with(c -> {
                         c.getLabel().setAlignment(Align.center);
                     }).grow();
                 });
@@ -183,7 +197,7 @@ public class MI2UI extends Mindow2{
                     button.addChild(label);
                 }
             }).growX();
-        }, () -> true).growX().get().setDuration(0.25f).setCollapsed(true, () -> !Vars.control.input.commandMode).setCollapsed(!Vars.control.input.commandMode);
+        }, () -> true).growX().get().setDuration(0.15f).setCollapsed(true, () -> !Vars.control.input.commandMode).setCollapsed(!Vars.control.input.commandMode);
 
     }
 
@@ -199,7 +213,6 @@ public class MI2UI extends Mindow2{
         settings.add(new CheckEntry("enPlayerCursor", "@settings.main.playerCursor", true, null));
         settings.add(new CheckEntry("enOverdriveZone", "@settings.main.overdriveZone", false, null));
         settings.add(new CheckEntry("enMenderZone", "@settings.main.menderZone", false, null));
-        settings.add(new FieldEntry("flashZoneAlpha", "@settings.main.flashZoneAlpha", String.valueOf(50), TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) >= 0 && Strings.parseInt(s) <= 150, null));
         settings.add(new CheckEntry("enSpawnZone", "@settings.main.spawnZone", true, null));
 
         settings.add(new CollapseGroupEntry("DistributionReveal", ""){
@@ -275,6 +288,18 @@ public class MI2UI extends Mindow2{
         });
 
         settings.add(new FieldEntry("maxSchematicSize", "@settings.main.maxSchematicSize", String.valueOf(32), TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) >= 16 && Strings.parseInt(s) <= 512, s -> Vars.maxSchematicSize = Mathf.clamp(Strings.parseInt(s), 16, 512)));
+
+        settings.add(new CheckEntry("instantBuild", "@settings.main.instantBuild", true, null));
+
+        settings.add(new CollapseGroupEntry("BlockSelectTable", ""){
+            CheckEntry check1 = new CheckEntry("modifyBlockSelectTable", "@settings.main.modifyBlockSelectTable", false, null);
+            FieldEntry check2 = new FieldEntry("blockSelectTableHeight", "@settings.main.blockSelectTableHeight", String.valueOf(194), TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) >= 100 && Strings.parseInt(s) <= 1000, null);
+            {
+                collapsep = () -> !check1.value;
+                headBuilder = t -> check1.build(t);
+                builder = t -> check2.build(t);
+            }
+        });
 
         settings.add(new FieldEntry("blockSelectTableHeight", "@settings.main.blockSelectTableHeight", String.valueOf(194), TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) >= 100 && Strings.parseInt(s) <= 1000, null));
 

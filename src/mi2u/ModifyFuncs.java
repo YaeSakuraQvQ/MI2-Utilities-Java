@@ -152,15 +152,26 @@ public class ModifyFuncs{
             });
         }
 
-        Table blockCatTable = MI2Utils.getValue(ui.hudfrag.blockfrag, "blockCatTable");
+        if(MI2USettings.getBool("modifyBlockSelectTable", false)){
+            Table blockCatTable = MI2Utils.getValue(ui.hudfrag.blockfrag, "blockCatTable");
 
-        ((Table)blockCatTable.getCells().first().get()).getCells().first().maxHeight(Mathf.clamp(MI2USettings.getInt("blockSelectTableHeight", 194), 50, 1000));
-        blockCatTable.getCells().get(1).height(Mathf.clamp(MI2USettings.getInt("blockSelectTableHeight", 194) + 52, 50, 1000));
+            ((Table)blockCatTable.getCells().first().get()).getCells().first().maxHeight(Mathf.clamp(MI2USettings.getInt("blockSelectTableHeight", 194), 50, 1000));
+            blockCatTable.getCells().get(1).height(Mathf.clamp(MI2USettings.getInt("blockSelectTableHeight", 194) + 52, 50, 1000));
+        }
     }
 
     public static void settingsMenuDialog(){
         ui.settings.addCategory("@mindow2.settings.title", new TextureRegionDrawable(new TextureRegion(MI2Utilities.MOD.iconTexture)), st ->{
             st.add("@mindow2.settings.allIntro");
+            st.row();
+            st.pane(t -> {
+                t.name = "Mindow Help";
+                for(var m : mindow2s){
+                    if(!m.mindowName.equals("")) t.button(Iconc.infoCircle + Core.bundle.get(m.titleText.substring(1)), textb, m::showHelp).with(funcSetTextb).pad(4f);
+                }
+            }).with(p -> {
+                p.setForceScroll(true, false);
+            }).growX();
             st.row();
             st.table(t -> {
                 int index = 0;

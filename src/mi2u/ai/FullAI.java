@@ -4,19 +4,24 @@ import arc.*;
 import arc.graphics.*;
 import arc.math.*;
 import arc.math.geom.*;
+import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
-import mi2u.MI2UTmp;
+import mi2u.*;
+import mi2u.game.*;
 import mi2u.input.*;
 import mi2u.io.*;
 import mi2u.ui.*;
+import mindustry.*;
+import mindustry.ai.types.*;
 import mindustry.content.*;
 import mindustry.entities.*;
 import mindustry.entities.units.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.input.*;
+import mindustry.logic.*;
 import mindustry.type.*;
 import mindustry.type.weapons.RepairBeamWeapon;
 import mindustry.world.*;
@@ -37,6 +42,7 @@ public class FullAI extends AIController{
         modes.add(new AutoBuildMode());
         modes.add(new SelfRepairMode());
         modes.add(new AutoTargetMode());
+        modes.add(new LogicMode());
 
         Events.run(EventType.Trigger.update, () -> {
             fullAI.unit(player.unit());
@@ -62,6 +68,10 @@ public class FullAI extends AIController{
     /**unit actions can be covered by the lasted related mode. Executed after each mode acted.*/
     public void moveAction(Position target, float radius, boolean checkWithin){
         if(control.input instanceof InputOverwrite inp) inp.approach(target, radius, checkWithin);
+    }
+
+    public void moveAction(float x, float y, float radius, boolean checkWithin){
+        if(control.input instanceof InputOverwrite inp) inp.approach(MI2UTmp.v3.set(x, y), radius, checkWithin);
     }
 
     public void boostAction(boolean boost){
@@ -107,7 +117,7 @@ public class FullAI extends AIController{
             if(!enable) return;
             Building core = unit.closestCore();
             boostAction(true);
-            if(!(unit.canMine()) || core == null) return;
+            if(!(unit.canMine()) || !unit.type.mineFloor || core == null) return;
             if(unit.mineTile != null && !unit.mineTile.within(unit, unit.type.mineRange)){
                 unit.mineTile = null;
             }
@@ -212,7 +222,14 @@ public class FullAI extends AIController{
 
                             //make sure you can reach the request in time
                             if(dist / unit.speed() < cons.buildCost * 0.9f && (cobuildplan == null || MI2UTmp.v1.set(u.buildPlan()).dst(unit) < MI2UTmp.v2.set(cobuildplan).dst(unit))){
-                                cobuildplan = plan;
+                                boolean itemreq = true;
+                                for(var item : cobuildplan.block.requirements){
+                                    if(player.team().core() != null && !player.team().core().items.has(item.item)){
+                                        itemreq = false;
+                                        break;
+                                    }
+                                }
+                                if(itemreq) cobuildplan = plan;
                             }
                         }
                     }
@@ -290,6 +307,7 @@ public class FullAI extends AIController{
     }
 
     public class SelfRepairMode extends Mode{
+        public float hold = 0.6f;
         public SelfRepairMode(){
             btext = Iconc.blockRepairPoint + "";
         }
@@ -297,11 +315,17 @@ public class FullAI extends AIController{
         public void act(){
             if(!enable) return;
             if(unit.dead || !unit.isValid()) return;
-            if(unit.health > unit.maxHealth * 0.6f) return;
+            if(unit.health > unit.maxHealth * hold) return;
             Building tile = Geometry.findClosest(unit.x, unit.y, indexer.getFlagged(unit.team, BlockFlag.repair));
             if(tile == null) return;
             boostAction(true);
             moveAction(tile, 20f, false);
+        }
+
+        @Override
+        public void buildConfig(Table table){
+            super.buildConfig(table);
+            table.slider(0f, 1f, 0.01f, 0.6f, f -> hold = f).get().setValue(hold);
         }
     }
 
@@ -347,7 +371,6 @@ public class FullAI extends AIController{
     }
 
     public class CenterFollowMode extends Mode{
-        public Vec2 unitPos = new Vec2();
         Item targetItem;
         boolean onetimePick = true;
         public CenterFollowMode(){
@@ -413,6 +436,94 @@ public class FullAI extends AIController{
             }).maxHeight(300f).with(p -> p.setFadeScrollBars(false));
             table.row();
             table.button("@ai.config.oneTime", textbtoggle, () -> onetimePick = !onetimePick).growX().update(b -> b.setChecked(onetimePick)).with(funcSetTextb);
+        }
+    }
+
+    public class LogicMode extends Mode{
+        LExecutor exec = new LExecutor();
+        String code;
+        LogicAI ai = new LogicAI();
+        int instructionsPerTick = 100;
+        MI2Utils.IntervalMillis timer = new MI2Utils.IntervalMillis();
+
+        //public int lastPathId = 0;
+        //public float lastMoveX, lastMoveY;
+
+        public LogicMode(){
+            super();
+            btext = Iconc.blockWorldProcessor + "";
+            Events.on(MI2UEvents.FinishSettingInitEvent.class, e -> {
+                code = MI2USettings.getStr("ai.logic.code.0");
+                readCode(code);
+            });
+        }
+
+        @Override
+        public void act(){
+            if(!enable) return;
+            ai.unit(unit);
+            var ctrl = unit.controller();
+            unit.controller(ai);
+
+            if(timer.get(200)){
+                ai.targetTimer = 0f;
+                ai.controlTimer = LogicAI.logicControlTimeout;
+                ai.updateMovement();
+            }
+
+            for(int i = 0; i < Mathf.clamp(instructionsPerTick, 1, 2000); i++){
+                exec.setconst(LExecutor.varUnit, unit);
+                exec.runOnce();
+            }
+
+            unit.controller(ctrl);
+            fullAI.unit(unit);
+
+            boostAction(ai.boost);
+            if(ai.control != LUnitControl.pathfind || unit.isFlying()){
+                moveAction(ai.moveX, ai.moveY, Math.max(ai.moveRad, 1f), false);
+            }/*else{
+                if(!Mathf.equal(ai.moveX, lastMoveX, 0.1f) || !Mathf.equal(ai.moveY, lastMoveY, 0.1f)){
+                    lastPathId ++;
+                    lastMoveX = ai.moveX;
+                    lastMoveY = ai.moveY;
+                }
+                if(Vars.controlPath.getPathPosition(unit, lastPathId, Tmp.v2.set(ai.moveX, ai.moveY), Tmp.v1, null)){
+                    moveTo(Tmp.v1, 1f, Tmp.v2.epsilonEquals(Tmp.v1, 4.1f) ? 30f : 0f);
+                }
+                moveAction(Tmp.v1, Math.max(ai.moveRad, 1f), false);//tmp.v1 is set in ai.updateMovement()
+            }*/
+            var tgt = ai.target(0, 0, 0, false, false);
+            if(tgt != null) shootAction(MI2UTmp.v3.set(tgt.getX(), tgt.getY()), ai.shoot);
+        }
+
+        @Override
+        public void buildConfig(Table table){
+            super.buildConfig(table);
+            table.button(Iconc.pencil + "" + Iconc.blockWorldProcessor, textb, () -> {
+                ui.logic.show(code, exec, true, str -> {
+                    readCode(str);
+                });
+            }).growX().pad(4f).height(32f);
+            table.row();
+            table.table(t -> {
+                t.name = "ipt";
+                t.add("ipt=");
+                t.field(String.valueOf(instructionsPerTick), TextField.TextFieldFilter.digitsOnly, str -> instructionsPerTick = Strings.parseInt(str)).growX();
+            });
+
+        }
+
+        public void readCode(String str){
+            code = str;
+            MI2USettings.putStr("ai.logic.code.0", code);
+            LAssembler asm = LAssembler.assemble(str, true);
+            asm.putConst("@mapw", world.width());
+            asm.putConst("@maph", world.height());
+            asm.putConst("@links", exec.links.length);
+            asm.putConst("@ipt", instructionsPerTick);
+            exec.load(asm);
+            exec.privileged = true;
         }
     }
 }
