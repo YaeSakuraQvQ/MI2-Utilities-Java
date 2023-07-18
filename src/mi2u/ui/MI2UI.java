@@ -32,7 +32,7 @@ public class MI2UI extends Mindow2{
 
         Events.run(EventType.Trigger.update, () -> {
             if(state.isGame()){
-                RtsCommand.desktopFormation();//Independent of inputoverwrite, may bug
+                RtsCommand.desktopFormation();//Independent from inputoverwrite, may bug
                 if(!state.isPaused()){
                     realRunTime += Time.timeSinceMillis(lastRealRun);
                 }
@@ -40,7 +40,7 @@ public class MI2UI extends Mindow2{
                 lastRealRun = Time.millis();
                 lastRunTime = Time.millis();
 
-                if(state.rules.mode() == Gamemode.sandbox && !net.active() && state.isGame() && !state.isPaused() && player.unit() != null && MI2USettings.getBool("instantBuild", true)){
+                if(state.rules.mode() == Gamemode.sandbox && !net.active() && state.isGame() && !state.isPaused() && player.unit() != null && control.input.isBuilding && MI2USettings.getBool("instantBuild", true)){
                     player.unit().plans.each(bp -> {
                         var tile = world.tiles.getc(bp.x, bp.y);
                         if(bp.breaking){
@@ -239,6 +239,7 @@ public class MI2UI extends Mindow2{
         settings.add(new CheckEntry("enBlockHpBar", "@settings.main.blockHpBar", false, null));
         settings.add(new CheckEntry("enTurretZone", "@settings.main.enTurretZone", false, null));
         settings.add(new CheckEntry("enUnitHpBar", "@settings.main.unitHpBar", false, null));
+        settings.add(new ChooseEntry("unitHpBarStyle", "@settings.main.unitHpBarStyle", new String[]{"1", "2"}, str -> str.equals("1") ? "三" : "x[accent][[i]", null));
         settings.add(new CheckEntry("enUnitHpBarDamagedOnly", "@settings.main.unitHpBarDamagedOnly", true, null));
         settings.add(new CheckEntry("enUnitHitbox", "@settings.main.unitHitbox", false, null));
         settings.add(new CheckEntry("enUnitLogic", "@settings.main.unitLogic", false, null));
@@ -287,8 +288,6 @@ public class MI2UI extends Mindow2{
             }
         });
 
-        settings.add(new FieldEntry("maxSchematicSize", "@settings.main.maxSchematicSize", String.valueOf(32), TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) >= 16 && Strings.parseInt(s) <= 512, s -> Vars.maxSchematicSize = Mathf.clamp(Strings.parseInt(s), 16, 512)));
-
         settings.add(new CheckEntry("instantBuild", "@settings.main.instantBuild", true, null));
 
         settings.add(new CollapseGroupEntry("BlockSelectTable", ""){
@@ -300,8 +299,6 @@ public class MI2UI extends Mindow2{
                 builder = t -> check2.build(t);
             }
         });
-
-        settings.add(new FieldEntry("blockSelectTableHeight", "@settings.main.blockSelectTableHeight", String.valueOf(194), TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) >= 100 && Strings.parseInt(s) <= 1000, null));
 
         settings.add(new FieldEntry("rtsFormDoubleTap", "@settings.main.rtsFormDoubleTap", "300", TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) > 0, s -> RtsCommand.doubleTapInterval = Strings.parseInt(s)));
 
@@ -321,5 +318,14 @@ public class MI2UI extends Mindow2{
         }));
 
         settings.add(new CheckEntry("showUIContainer", "@settings.main.container", false, b -> container.addTo(b?Core.scene.root:null)));
+
+
+        settings.add(new FieldEntry("maxSchematicSize", "@settings.main.maxSchematicSize", String.valueOf(32), TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) >= 16 && Strings.parseInt(s) <= 512, s -> Vars.maxSchematicSize = Mathf.clamp(Strings.parseInt(s), 16, 512)));
+
+        //zoom in
+        settings.add(new FieldEntry("maxZoom", "@settings.main.maxZoom", String.valueOf(renderer.maxZoom), TextField.TextFieldFilter.floatsOnly, s -> Strings.parseFloat(s) > renderer.minZoom && Strings.parseFloat(s) <= 60, s -> renderer.maxZoom = Strings.parseFloat(s)));
+
+        //zoom out
+        settings.add(new FieldEntry("minZoom", "@settings.main.minZoom", String.valueOf(renderer.minZoom), TextField.TextFieldFilter.floatsOnly, s -> Strings.parseFloat(s) < renderer.maxZoom && Strings.parseFloat(s) > 0.01f, s -> renderer.minZoom = Strings.parseFloat(s)));
     }
 }
