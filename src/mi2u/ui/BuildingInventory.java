@@ -16,9 +16,11 @@ import mindustry.core.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
+import mindustry.world.blocks.distribution.*;
 import mindustry.world.blocks.storage.*;
 
 import static arc.Core.graphics;
+import static mi2u.MI2UVars.fadeBackground;
 import static mindustry.Vars.*;
 
 public class BuildingInventory extends Element{
@@ -32,7 +34,7 @@ public class BuildingInventory extends Element{
     };
     public static Font font = Fonts.outline;
     Building build;
-    float scl, iconsize;
+    float scl, iconsize, size;
 
     MI2Utils.IntervalMillis itemused = new MI2Utils.IntervalMillis(content.items().size), liquidused = new MI2Utils.IntervalMillis(content.liquids().size);
 
@@ -47,7 +49,8 @@ public class BuildingInventory extends Element{
     }
 
     public static void get(Building b){
-        if(state.isGame() && ((b.block.itemCapacity >= 10 && b.items != null && !(b instanceof StorageBlock.StorageBuild sb && sb.linkedCore != null)) || b.liquids != null)){
+        if(b == null) return;
+        if(b.liquids != null || state.isGame() && ((b.block.itemCapacity >= 10 && b.items != null && !(b instanceof StorageBlock.StorageBuild sb && sb.linkedCore != null) && !(b instanceof StackConveyor.StackConveyorBuild)))){
             if(used.add(b.id)) pool.obtain().setBuilding(b);
         }
     }
@@ -56,15 +59,19 @@ public class BuildingInventory extends Element{
 
     public void setBuilding(Building b){
         this.build = b;
+        size = b.block.size;
         group.addChild(this);
     }
 
     @Override
     public void act(float delta){
         super.act(delta);
-        Core.camera.project(MI2UTmp.v3.set(-1f, -1f).scl(build.block.size * tilesize / 2f).add(build.x, build.y));
+        if(!vaild()){
+            remove();
+            return;
+        }
+        Core.camera.project(MI2UTmp.v3.set(-1f, -1f).scl(size * tilesize / 2f).add(build.x, build.y));
         setPosition(MI2UTmp.v3.x, MI2UTmp.v3.y);
-        if(!vaild()) remove();
     }
 
     public boolean vaild(){
@@ -75,35 +82,31 @@ public class BuildingInventory extends Element{
     public boolean remove(){
         if(build != null) used.remove(build.id);
         build = null;
+        pool.free(this);
         return super.remove();
     }
 
     @Override
     public void draw(){
         if(!vaild() || (state.rules.fog && build.inFogTo(player.team()))) return;
-        super.draw();
-        Draw.alpha(1f);
-        Draw.color(Color.white);
-        Styles.black3.draw(x, y, width, height);
-
-        Draw.alpha(1f);
-        Draw.color(Color.white);
-        int i = 0;
-        int size = build.block.size;
-        float count = content.items().count(ii -> build.items != null && (build.items.has(ii) || !itemused.check(ii.id, 1000))) + content.liquids().count(ii -> build.liquids != null && (build.liquids.get(ii) > 0f || !liquidused.check(ii.id, 1000)));
-        float rows = Mathf.ceil(count / (float)size);
-        float rowdy = Math.min(size / rows + 0.1f, 1);
         scl = graphics.getWidth() / Core.camera.width * (size > 1 ? 1f : 0.7f);
+        if(scl < 1.5f) return;
+
+        Draw.reset();
+        fadeBackground.draw(x, y, width, height);
         iconsize = tilesize * scl;
+
+        int i = 0;
+        float count = content.items().count(ii -> !itemused.check(ii.id, 1000)) + content.liquids().count(ii -> !liquidused.check(ii.id, 1000));
+        int rows = Mathf.ceil(count / size);
+        float rowdy = Math.min(size / rows + 0.1f, 1);
 
         setSize(iconsize * Math.min(count, size), rows * rowdy * iconsize);
 
-        font.setColor(1f, 1f, 1f, 0.5f);
         float oldScaleX = font.getScaleX();
         float oldScaleY = font.getScaleY();
         font.getData().setScale(scl / 7f, scl / 7f);
-        var cache = font.getCache();
-        cache.setColor(Color.white);
+        font.setColor(Color.white);
         float amt, dx, dy;
         int amti;
 
@@ -114,12 +117,10 @@ public class BuildingInventory extends Element{
                 if(liquidused.check(item.id, 1000)) continue;
 
                 dx = Mathf.mod(i, size) * iconsize;
-                dy = rowdy * Mathf.floor(i / (float)size) * iconsize;
+                dy = rowdy * Mathf.floor(i / size) * iconsize;
                 Draw.rect(item.uiIcon, x + dx + iconsize / 2f, y + dy + iconsize / 2f, iconsize * 0.75f, iconsize * 0.75f);
 
-                cache.clear();
-                cache.addText(amt < 100f ? Strings.autoFixed(amt, 2) : UI.formatAmount((int)amt), x + dx, y + dy + iconsize / 2f);
-                cache.draw(0.8f);
+                font.draw(amt < 100f ? Strings.autoFixed(amt, 2) : UI.formatAmount((int)amt), x + dx, y + dy + iconsize / 2f);
 
                 i++;
             }
@@ -132,12 +133,10 @@ public class BuildingInventory extends Element{
                 if(itemused.check(item.id, 1000)) continue;
 
                 dx = Mathf.mod(i, size) * iconsize;
-                dy = rowdy * Mathf.floor(i / (float)size) * iconsize;
+                dy = rowdy * Mathf.floor(i / size) * iconsize;
                 Draw.rect(item.uiIcon, x + dx + iconsize / 2f, y + dy + iconsize / 2f, iconsize * 0.75f, iconsize * 0.75f);
 
-                cache.clear();
-                cache.addText(UI.formatAmount(amti), x + dx, y + dy + iconsize / 2f);
-                cache.draw(0.8f);
+                font.draw(UI.formatAmount(amti), x + dx, y + dy + iconsize / 2f);
 
                 i++;
             }

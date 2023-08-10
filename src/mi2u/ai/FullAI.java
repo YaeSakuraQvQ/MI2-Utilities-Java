@@ -4,6 +4,7 @@ import arc.*;
 import arc.graphics.*;
 import arc.math.*;
 import arc.math.geom.*;
+import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
@@ -45,8 +46,10 @@ public class FullAI extends AIController{
         modes.add(new LogicMode());
 
         Events.run(EventType.Trigger.update, () -> {
-            fullAI.unit(player.unit());
-            fullAI.updateUnit();
+            if(state.isGame() && state.isPlaying()){
+                fullAI.unit(player.unit());
+                fullAI.updateUnit();
+            }
         });
     }
 
@@ -61,7 +64,9 @@ public class FullAI extends AIController{
         }
         if(control.input instanceof InputOverwrite inp){
             inp.clear();
-            modes.each(Mode::act);
+            modes.each(mode -> {
+                if(mode.enable) mode.act();
+            });
         }
     }
 
@@ -85,10 +90,11 @@ public class FullAI extends AIController{
     public class Mode{
         public boolean enable = false;
         public String btext;
+        public Drawable bimg;
         public Mode(){
             btext = Iconc.units + "";
         }
-        /** override it. enable should be checked first */
+        /** override it. enable auto checked. */
         public void act(){}
 
         public void buildConfig(Table table){
@@ -99,7 +105,11 @@ public class FullAI extends AIController{
                 }, textb, () -> {
                     enable = !enable;
                 }).size(16f);
-                t.add(btext).color(Color.sky).left();
+                if(bimg != null){
+                    t.image(bimg).size(18f).scaling(Scaling.fit);
+                }else{
+                    t.add(btext).color(Color.sky).left();
+                }
                 t.add().growX();
             }).growX().minHeight(18f).padTop(8f);
             table.row();
@@ -119,7 +129,6 @@ public class FullAI extends AIController{
 
         @Override
         public void act(){
-            if(!enable) return;
             Building core = unit.closestCore();
             boostAction(true);
             if(!(unit.canMine()) || !unit.type.mineFloor || core == null) return;
@@ -211,7 +220,6 @@ public class FullAI extends AIController{
         }
         @Override
         public void act(){
-            if(!enable) return;
             if(!control.input.isBuilding) return;
             if(!unit.canBuild()) return;
             //help others building, catching the closest plan to co-op.
@@ -321,7 +329,6 @@ public class FullAI extends AIController{
         }
         @Override
         public void act(){
-            if(!enable) return;
             if(unit.dead || !unit.isValid()) return;
             if(unit.health > unit.maxHealth * hold) return;
             Building tile = Geometry.findClosest(unit.x, unit.y, indexer.getFlagged(unit.team, BlockFlag.repair));
@@ -341,10 +348,10 @@ public class FullAI extends AIController{
         public boolean attack = true, heal = true;
         public AutoTargetMode(){
             btext = "AT";
+            bimg = Core.atlas.drawable("mi2-utilities-java-ui-shoot");
         }
         @Override
         public void act(){
-            if(!enable) return;
             if(Core.input.keyDown(Binding.select)) return;
 
             if(timer.get(6, 30f)){
@@ -384,6 +391,7 @@ public class FullAI extends AIController{
         public CenterFollowMode(){
             btext = Iconc.move + "";
             enable = mobile;
+            bimg = Core.atlas.drawable("mi2-utilities-java-ui-centermove");
         }
         @Override
         public void act(){
@@ -457,6 +465,7 @@ public class FullAI extends AIController{
         MI2Utils.IntervalMillis actionTimer = new MI2Utils.IntervalMillis(2);
         public boolean itemTrans, payloadTrans;
         public static StringBuffer log = new StringBuffer();
+        Queue<BuildPlan> plans = new Queue<>();
 
         //public int lastPathId = 0;
         //public float lastMoveX, lastMoveY;
@@ -474,8 +483,6 @@ public class FullAI extends AIController{
 
         @Override
         public void act(){
-            if(!enable) return;
-            ai.unit(unit);
             var ctrl = unit.controller();
             unit.controller(ai);
 
@@ -486,6 +493,8 @@ public class FullAI extends AIController{
                 ai.updateMovement();
             }
 
+            plans.clear();
+            if(unit.plans != null) unit.plans.each(bp -> plans.add(bp));
             for(int i = 0; i < Mathf.clamp(instructionsPerTick, 1, 2000); i++){
                 if(exec.instructions.length == 0) break;
                 exec.setconst(LExecutor.varUnit, unit);
@@ -499,6 +508,7 @@ public class FullAI extends AIController{
                 }
                 exec.runOnce();
             }
+            if(unit.plans != null && unit.plans.isEmpty()) plans.each(bp -> unit.plans.add(bp));
 
             unit.controller(ctrl);
             fullAI.unit(unit);
@@ -535,7 +545,7 @@ public class FullAI extends AIController{
                     ui.logic.show(code, exec, true, str -> {
                         readCode(str);
                     });
-                }).grow();
+                }).grow().minWidth(40f);
                 t.add("ipt=");
                 t.field(String.valueOf(instructionsPerTick), TextField.TextFieldFilter.digitsOnly, str -> instructionsPerTick = Strings.parseInt(str)).growX();
                 t.button(Iconc.info + "", textb, () -> {
@@ -545,11 +555,11 @@ public class FullAI extends AIController{
             table.row();
             table.add("Print Log").left().color(Color.royal);
             table.row();
-            table.table(t -> {
+            table.pane(t -> {
                 t.name = "log";
                 t.image().color(Color.royal).growY().width(2f);
                 t.labelWrap(() -> log).grow();
-            }).grow();
+            }).grow().maxHeight(200f);
 
         }
 

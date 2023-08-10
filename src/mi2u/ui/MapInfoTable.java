@@ -40,6 +40,8 @@ public class MapInfoTable extends Table{
         super();
         Events.on(EventType.WorldLoadEvent.class, e -> {
             clearData();
+            WorldData.clear();
+            WorldData.scanWorld(world.tiles.height * world.tiles.width);
             WorldData.updateSpanwer();
             //reset hpbar pools
             hpBars.each(c -> {
@@ -88,6 +90,7 @@ public class MapInfoTable extends Table{
         wavesPopup.update(() -> {
             wavesPopup.keepInScreen();
         });
+        wavesPopup.touchable = Touchable.enabled;
         wavesPopup.addCloseButton();
         wavesPopup.addDragMove();
         wavesPopup.background(Styles.black3);
@@ -196,7 +199,7 @@ public class MapInfoTable extends Table{
                 p.clear();
                 buildPreview(p, curWave, curSpawn);
             });
-        }).fillX().maxHeight(200f).update(p -> {
+        }).fillX().maxHeight(Core.graphics.getHeight()*0.1f/Scl.scl()).update(p -> {
             Element e = Core.scene.hit(Core.input.mouseX(), Core.input.mouseY(), true);
             if(e != null && e.isDescendantOf(p)){
                 p.requestScroll();
@@ -205,7 +208,7 @@ public class MapInfoTable extends Table{
             }
         }).row();
 
-        wavesPopup.pane(t -> barsTable = t).fillX().maxHeight(300f).update(p -> {
+        wavesPopup.pane(t -> barsTable = t).fillX().maxHeight(Core.graphics.getHeight()*0.5f/Scl.scl()).update(p -> {
             Element e = Core.scene.hit(Core.input.mouseX(), Core.input.mouseY(), true);
             if(e != null && e.isDescendantOf(p)){
                 p.requestScroll();
@@ -220,7 +223,9 @@ public class MapInfoTable extends Table{
     public void buildBars(Table t){
         tmp.clear();
         t.clearChildren();
+        final int[] i = {0};
         allwaves.each(d -> {
+            if(i[0]++ > 50) return;
             if(d.totalHp + d.totalHp <= 0f) return;
             var found = hpBars.find(b -> b.wave == d.wave);
             if(found != null){
