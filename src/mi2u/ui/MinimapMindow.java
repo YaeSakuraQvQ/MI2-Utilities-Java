@@ -85,9 +85,9 @@ public class MinimapMindow extends Mindow2{
             Cons<Table> l = tl -> {
                 tl.table(tt -> {
                     tt.defaults().width(1f).fontScale(0.8f);
-                    tt.label(() -> player.unit().type.emoji() + Strings.fixed(World.conv(player.x), 1) + ", "+ Strings.fixed(World.conv(player.y), 1)).get().setAlignment(Align.right);
+                    tt.label(() -> Strings.fixed(World.conv(player.x), 1) + ", "+ Strings.fixed(World.conv(player.y), 1) + player.unit().type.emoji()).get().setAlignment(Align.right);
                     tt.row();
-                    tt.label(() -> "♐" + Strings.fixed(World.conv(Core.input.mouseWorldX()), 1) + ", "+ Strings.fixed(World.conv(Core.input.mouseWorldY()), 1)).color(Color.lightGray).get().setAlignment(Align.right);
+                    tt.label(() -> Strings.fixed(World.conv(Core.input.mouseWorldX()), 1) + ", "+ Strings.fixed(World.conv(Core.input.mouseWorldY()), 1) + "♐").color(Color.lightGray).get().setAlignment(Align.right);
                 }).right();
             };
             Cons<Table> b = tb -> {
