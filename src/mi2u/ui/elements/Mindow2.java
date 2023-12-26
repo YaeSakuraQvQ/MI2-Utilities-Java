@@ -74,10 +74,7 @@ public class Mindow2 extends Table{
     }
 
     public void init(){}
-    private boolean forceCenter() {
-        // 根据窗口名进行匹配，如果匹配则返回 true，表示需要居中
-        return mindowName != null && mindowName.equals("CoreInfo");
-    }
+
     public void rebuild(){
         clear();
         cont.setBackground(Styles.black3);
@@ -89,10 +86,6 @@ public class Mindow2 extends Table{
         row();
         if(!minimized){
             add(cont).growX();
-        }
-        if(forceCenter()) {
-            curx = (Core.graphics.getWidth() - getWidth() * cont.scaleX) / 2;
-            cury = (Core.graphics.getHeight() - getHeight() * cont.scaleY) / 2;
         }
     }
 
