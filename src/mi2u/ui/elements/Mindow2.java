@@ -1,4 +1,4 @@
-package mi2u.ui;
+package mi2u.ui.elements;
 
 import arc.*;
 import arc.func.*;
@@ -41,11 +41,12 @@ import static mi2u.MI2UVars.*;
 public class Mindow2 extends Table{
     public static Drawable titleBarbgNormal, titleBarbgSnapped, white, gray2;
 
-    public float fromx = 0, fromy = 0, curx = 0, cury = 0;
-    boolean dragging = false;
+    public float fromx = 0, fromy = 0, curx = 0, cury = 0, curw = 100f, curh = 100f;
+    boolean dragging = false, resizing = false;
     public boolean minimized = false;
+    boolean titleCfg = false;
     public String titleText, helpInfo = "", mindowName;
-    protected Table titleBar = new Table();
+    protected Table titleBar = new Table(), titlePane = new Table(Styles.black6);
     protected Table cont = new Table();
     protected Seq<SettingEntry> settings = new Seq<>();
     protected MI2Utils.IntervalMillis interval = new MI2Utils.IntervalMillis(2);
@@ -54,9 +55,10 @@ public class Mindow2 extends Table{
     public int tbSnapAlign, lrSnapAlign;
     public float tbLeftOff, lrBottomOff;
 
-    public Mindow2(String title){
+    public Mindow2(String name, String title, String help){
         init();
-
+        mindowName = name;
+        helpInfo = help;
         Events.on(MI2UEvents.FinishSettingInitEvent.class, e -> {
             initSettings();
             loadUISettings();
@@ -66,26 +68,24 @@ public class Mindow2 extends Table{
 
         titleText = title;
         registerName();
-        rebuild();
-    }
-
-    public Mindow2(String title, String help){
-        this(title);
-        helpInfo = help;
+        Events.on(ClientLoadEvent.class, e -> {
+            rebuild();
+        });
     }
 
     public void init(){}
 
     public void rebuild(){
         clear();
+        cont.setBackground(Styles.black3);
+        setupCont(cont);
+        cont.touchable = Touchable.enabled;
         setupTitle();
+
+        add(titleBar).growX();
         row();
         if(!minimized){
-            cont.setBackground(Styles.black3);
-            setupCont(cont);
-            add(cont);
-        }else{
-            add().size(titleBar.getPrefWidth(), titleBar.getPrefHeight());
+            add(cont).growX();
         }
     }
 
@@ -99,11 +99,55 @@ public class Mindow2 extends Table{
 
     public void setupTitle(){
         titleBar.clear();
-        var title = new Label(titleText);
-        title.name = "Mindow2Title";
-        title.setAlignment(Align.left);
-        title.addListener(new InputListener(){
-            static Vec2 tmpv = new Vec2();
+        titleBar.add(new ScrollPane(titlePane){
+            @Override
+            public float getPrefWidth(){
+                return 0f;
+            }
+        }).scrollX(true).scrollY(false).with(sp -> {
+            sp.update(() -> {
+                Element e = Core.scene.hit(Core.input.mouseX(), Core.input.mouseY(), true);
+                if(e != null && e.isDescendantOf(sp)){
+                    sp.requestScroll();
+                }else if(sp.hasScroll()){
+                    Core.scene.setScrollFocus(null);
+                }
+            });
+            sp.setFadeScrollBars(true);
+            sp.setupFadeScrollBars(0.3f, 0f);
+        }).growX().left().minWidth(32f);
+        titleBar.image().width(2f).growY().color(Color.white);
+
+        var toast = new Table();
+        toast.add(titleText).color(MI2UTmp.c1.set(0.8f,0.9f,1f,1f));
+        toast.button("-", textbtoggle, () -> {
+            minimized = !minimized;
+            cury += (minimized ? 1f : -1f) * cont.getHeight();
+            saveUISettings();
+            minimize();
+        }).size(titleButtonSize).update(b -> b.setChecked(minimized));
+        toast.button("" + Iconc.settings, textb, this::showSettings).size(titleButtonSize);
+        /*toast.button(b -> b.label(() -> "" + (resizing ? Iconc.move : Iconc.resize)), textb, () -> {
+            resizing = !resizing;
+            titleCfg = false;
+        }).size(titleButtonSize);*/
+        toast.setBackground(titleBarbgNormal);
+
+        titleBar.add(new MCollapser(toast, true).setCollapsed(true, () -> {
+            if(titleCfg && interval.check(0, 10000)) titleCfg = false;
+            return !titleCfg;
+        }).setDirection(true, true));
+
+        titleBar.update(() -> {
+            titleBar.invalidate();
+            titleBar.layout();
+        });
+
+        titleBar.button(b -> b.label(() -> "" + (resizing ? Iconc.resize : Iconc.move)), textb, () -> {
+            titleCfg = !titleCfg;
+            interval.get(0,0);
+        }).size(titleButtonSize).get().addListener(new InputListener(){
+            Vec2 tmpv = new Vec2();
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
                 fromx = x;
@@ -115,12 +159,15 @@ public class Mindow2 extends Table{
             @Override
             public void touchDragged(InputEvent event, float x, float y, int pointer){
                 Vec2 v = localToStageCoordinates(MI2UTmp.v1.set(x, y));
-                v.sub(fromx, fromy);
-                curx = v.x;
-                cury = v.y;
-
-                setSnap(v.x, v.y);
-                dragging = v.sub(tmpv).len() > 5f;
+                dragging = MI2UTmp.v2.set(v).sub(fromx, fromy).sub(tmpv).len() > 5f;
+                if(resizing){
+                    curw = Mathf.clamp(v.x - getX(left), 50f, 800f);
+                    curh = Mathf.clamp(v.y - getY(bottom), 50f, 800f);
+                }else{
+                    curx = v.x;
+                    cury = v.y;
+                    setSnap(v.x, v.y);
+                }
             }
 
             @Override
@@ -132,61 +179,26 @@ public class Mindow2 extends Table{
                 saveUISettings();
             }
         });
+    }
 
-        if(!minimized){
-            titleBar.add(title).pad(0, 1, 0, 1);
+    @Override
+    public void act(float delta){
+        super.act(delta);
+        boolean slideAnime = edgeSnap(edgesnap);
+        slideAnime = slideAnime | elementSnap(tbSnap, tbSnapAlign, lrSnap == null && !Align.isLeft(edgesnap) && !Align.isRight(edgesnap));
+        slideAnime = slideAnime | elementSnap(lrSnap, lrSnapAlign, tbSnap == null && !Align.isBottom(edgesnap) && !Align.isTop(edgesnap));
+        if(slideAnime) interval.reset(1, 0);
 
-            titleBar.button("" + Iconc.settings, textb, this::showSettings).size(titleButtonSize);
-
-            titleBar.button("-", textb, () -> {
-                minimized = !minimized;
-                cury += (minimized ? 1f : -1f) * cont.getHeight();
-                saveUISettings();
-                minimize();
-            }).size(titleButtonSize).update(b -> b.setChecked(minimized));
+        if(!interval.check(1, 400)){
+            setPosition(Mathf.lerpDelta(x, curx, 0.4f), Mathf.lerpDelta(y, cury, 0.4f));
         }else{
-            titleBar.button(titleText != null ? titleText : "-", textb, () -> {
-                minimized = !minimized;
-                cury += (minimized ? 1f : -1f) * cont.getHeight();
-                saveUISettings();
-                minimize();
-            }).height(titleButtonSize).update(b -> b.setChecked(minimized)).with(funcSetTextb);
+            setPosition(curx, cury);
         }
-
-        titleBar.update(() -> {
-            cont.touchable = Touchable.enabled;
-            //TODO add a abovesnap listener
-            titleBar.setBackground(titleBarbgNormal);
-            title.color.set(MI2UTmp.c1.set(0.8f,0.9f,1f,1f));
-
-            boolean slideAnime = edgeSnap(edgesnap);
-            slideAnime = slideAnime | elementSnap(tbSnap, tbSnapAlign, lrSnap == null && !Align.isLeft(edgesnap) && !Align.isRight(edgesnap));
-            slideAnime = slideAnime | elementSnap(lrSnap, lrSnapAlign, tbSnap == null && !Align.isBottom(edgesnap) && !Align.isTop(edgesnap));
-            if(slideAnime) interval.reset(1, 0);
-
-            if(!interval.check(1, 400)){
-                setPosition(Mathf.lerpDelta(x, curx, 0.4f), Mathf.lerpDelta(y, cury, 0.4f));
-            }else{
-                setPosition(curx, cury);
-            }
-
-            cont.setTransform(true);
-            keepInStage();
-            invalidateHierarchy();
-            pack();
-        });
-
-        var coll = new Collapser(titleBar, false);
-        coll.setCollapsed(true, () -> !(cont.getPrefHeight() < 20f || minimized || (hasMouse() && interval.check(0, 3000))));
-        coll.setDuration(0.1f);
-        coll.update(() -> {
-            float w = titleBar.getPrefWidth(), h = titleBar.getPrefHeight();
-            coll.setSize(w, h);
-            coll.toFront();
-            coll.setPosition(0f, getHeight() * cont.scaleY - titleBar.getHeight());
-        });
-
-        addChild(coll);
+        //Log.info(width + "," + height);
+        //setSize(curw, curh);
+        keepInStage();
+        invalidateHierarchy();
+        pack();
     }
 
     /** Returns the X position of the specified {@link Align alignment}. */
@@ -381,6 +393,8 @@ public class Mindow2 extends Table{
         edgesnap = MI2USettings.getInt(mindowName + ".edgesnap", -1);
         curx = (float)MI2USettings.getInt(mindowName + ".curx");
         cury = (float)MI2USettings.getInt(mindowName + ".cury");
+        //curw = (float)MI2USettings.getInt(mindowName + ".curw");
+        //curh = (float)MI2USettings.getInt(mindowName + ".curh");
         cont.setScale(MI2USettings.getInt(mindowName + ".scale", 100) / 100f);
         mindow2s.each(m -> {
             if(m == this) return;
@@ -418,7 +432,8 @@ public class Mindow2 extends Table{
         if(!Align.isLeft(edgesnap) && !Align.isRight(edgesnap)){
             MI2USettings.putInt(mindowName + ".curx", (int)curx);
         }
-
+        //MI2USettings.putInt(mindowName + ".curw", (int)curw);
+        //MI2USettings.putInt(mindowName + ".curh", (int)curh);
         MI2USettings.putInt(mindowName + ".scale", (int)(cont.scaleX * 100));
 
         MI2USettings.putStr(mindowName + ".LRsnap", lrSnap == null ? "null" : lrSnap.mindowName);

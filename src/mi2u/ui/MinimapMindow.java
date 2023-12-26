@@ -20,6 +20,7 @@ import mi2u.input.InputOverwrite;
 import mi2u.io.*;
 import mi2u.io.MI2USettings.*;
 import mi2u.struct.*;
+import mi2u.ui.elements.*;
 import mindustry.core.*;
 import mindustry.game.EventType;
 import mindustry.gen.*;
@@ -28,6 +29,7 @@ import mindustry.input.*;
 import mindustry.ui.*;
 import mindustry.world.Tile;
 
+import static mi2u.MI2UVars.titleButtonSize;
 import static mindustry.Vars.*;
 
 public class MinimapMindow extends Mindow2{
@@ -37,7 +39,7 @@ public class MinimapMindow extends Mindow2{
 
     public boolean catching = false;
     public MinimapMindow(){
-        super("@minimap.MI2U");
+        super("MindowMap", "@minimap.MI2U", "");
 
         update(() -> {
             if(control.input instanceof InputOverwrite && control.input.block != null && Core.input.keyDown(KeyCode.controlLeft) && Core.input.keyDown(KeyCode.f)){
@@ -77,26 +79,12 @@ public class MinimapMindow extends Mindow2{
         Events.on(EventType.WorldLoadEvent.class, e -> {
             m.setZoom(m.zoom);
         });
-    }
 
-    @Override
-    public void init() {
-        super.init();
-        mindowName = "MindowMap";
-    }
-
-    @Override
-    public void setupCont(Table cont){
-        cont.clear();
-        int size = MI2USettings.getInt(mindowName + ".size", 140);
-        m.setMapSize(size);
-        cont.add(m);
-        cont.row();
-        cont.table(t -> {
+        titlePane.table(t -> {
             t.add().growX();//let coords being right align
             Cons<Table> l = tl -> {
                 tl.table(tt -> {
-                    tt.defaults().width(1f);
+                    tt.defaults().width(1f).fontScale(0.8f);
                     tt.label(() -> player.unit().type.emoji() + Strings.fixed(World.conv(player.x), 1) + ", "+ Strings.fixed(World.conv(player.y), 1)).get().setAlignment(Align.right);
                     tt.row();
                     tt.label(() -> "♐" + Strings.fixed(World.conv(Core.input.mouseWorldX()), 1) + ", "+ Strings.fixed(World.conv(Core.input.mouseWorldY()), 1)).color(Color.lightGray).get().setAlignment(Align.right);
@@ -115,12 +103,20 @@ public class MinimapMindow extends Mindow2{
                         buttons.popup(Align.right);
                         buttons.setPositionInScreen(Core.input.mouseX(), Core.input.mouseY());
                     }).width(32f).growY();
-                }).fillX().growY().minHeight(32f);
+                }).fillX().growY().height(titleButtonSize);
             };
 
             l.get(t);
             b.get(t);
         }).growX();
+    }
+
+    @Override
+    public void setupCont(Table cont){
+        cont.clear();
+        int size = MI2USettings.getInt(mindowName + ".size", 140);
+        m.setMapSize(size);
+        cont.add(m);
     }
 
     @Override

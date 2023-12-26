@@ -12,6 +12,7 @@ import mi2u.graphics.*;
 import mi2u.input.*;
 import mi2u.io.*;
 import mi2u.ui.*;
+import mi2u.ui.elements.*;
 import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
@@ -63,8 +64,6 @@ public class MI2Utilities extends Mod{
                 if(MI2USettings.getBool("showMindowMap")) mindowmap.addTo(mindowmap.hasParent() ? mindowmap.parent : Core.scene.root);
                 mindowmap.visible(() -> state.isGame() && ui.hudfrag.shown);
                 if(MI2USettings.getBool("showLogicHelper", true)) logicHelper.addTo(logicHelper.hasParent() ? logicHelper.parent : ui.logic);
-                if(MI2USettings.getBool("showUIContainer")) container.addTo(container.hasParent() ? container.parent : ui.logic);
-                container.visible(() -> state.isGame() && ui.hudfrag.shown);
 
                 RendererExt.initBase();
                 ModifyFuncs.modifyVanilla();
@@ -76,7 +75,6 @@ public class MI2Utilities extends Mod{
             Time.runTask(140f, () -> {
                 if(MI2USettings.getBool("enableUpdate", true)) checkUpdate();
             });
-
         });
 
         Events.on(FileTreeInitEvent.class, e -> Core.app.post(MI2UShaders::load));

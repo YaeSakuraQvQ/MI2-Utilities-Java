@@ -4,7 +4,6 @@ import arc.*;
 import arc.graphics.*;
 import arc.math.*;
 import arc.scene.*;
-import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
@@ -13,6 +12,7 @@ import mi2u.game.*;
 import mi2u.input.*;
 import mi2u.io.*;
 import mi2u.io.MI2USettings.*;
+import mi2u.ui.elements.*;
 import mindustry.*;
 import mindustry.game.*;
 import mindustry.gen.*;
@@ -28,8 +28,11 @@ public class MI2UI extends Mindow2{
 
     private long runTime = 0, lastRunTime = 0, realRunTime = 0, lastRealRun = 0;
 
+    protected TabsTable tabs;
+    public int tabId;
+
     public MI2UI(){
-        super("@main.MI2U", "@main.help");
+        super("MI2UI", "@main.MI2U", "@main.help");
 
         Events.run(EventType.Trigger.update, () -> {
             if(state.isGame()){
@@ -60,49 +63,40 @@ public class MI2UI extends Mindow2{
             realRunTime = runTime = 0;
             lastRealRun = lastRunTime = Time.millis();
         });
-    }
 
-    @Override
-    public void init(){
-        super.init();
-        mindowName = "MI2UI";
-    }
-
-    @Override
-    public void setupCont(Table cont){
-        cont.clear();
-        cont.table(t -> {
-            t.table(timet -> {
-                timet.label(() -> Iconc.save + Strings.formatMillis(control.saves.getTotalPlaytime())).minWidth(40f).padRight(8f);
-                timet.row();
-                timet.label(() -> Iconc.play + Strings.formatMillis(runTime)).minWidth(40f).padRight(8f).get();
-                timet.row();
-                timet.label(() -> Iconc.pause + Strings.formatMillis(realRunTime)).minWidth(40f).get();
-            });
-            t.add(mapinfo).growX();
-        }).growX();
-
-        cont.row();
-
-        cont.table(tt -> {
-            if(MI2USettings.getEntry("enDistributionReveal") instanceof CheckEntry ce) tt.add(ce.newTextButton("" + Iconc.zoom + Iconc.blockJunction)).minSize(24f);
-            if(MI2USettings.getEntry("enUnitHitbox") instanceof CheckEntry ce) tt.add(ce.newTextButton("" + Iconc.box)).width(36f);
-            if(MI2USettings.getEntry("disableUnit") instanceof CheckEntry ce) tt.add(ce.newTextButton("" + Iconc.cancel + Iconc.unitGamma)).width(36f);
-            if(MI2USettings.getEntry("disableBullet") instanceof CheckEntry ce) tt.add(ce.newTextButton("" + Iconc.cancel + Iconc.unitScatheMissile)).width(36f);
-            if(MI2USettings.getEntry("disableBuilding") instanceof CheckEntry ce) tt.add(ce.newTextButton("" + Iconc.cancel + Iconc.blockDuo)).width(36f);
+        titlePane.clear();
+        titlePane.table(t -> {
+            t.defaults().size(titleButtonSize);
+            t.button("" + Iconc.play, textb, () -> {
+                tabId = 0;
+                tabs.toggle(tabId);
+            }).color(Color.yellow);
+            t.button("" + Iconc.info, textb, () -> {
+                tabId = 1;
+                tabs.toggle(tabId);
+            }).color(Color.cyan);
+            t.button("" + Iconc.units, textb, () -> {
+                tabId = 2;
+                tabs.toggle(tabId);
+            }).color(Color.salmon);
+            t.button("" + Iconc.settings, textb, () -> {
+                tabId = 3;
+                tabs.toggle(tabId);
+            }).color(Color.green);
         });
 
-        cont.row();
+        tabs = new TabsTable(true);
 
-        cont.table(tt -> {
-            tt.button("" + Iconc.refresh, textb, () -> {
+        var play = new Table();
+        play.table(t -> {
+            t.button("" + Iconc.refresh, textb, () -> {
                 Call.sendChatMessage("/sync");
             }).minSize(36f).with(funcSetTextb);
 
-            tt.button("@main.buttons.rebuild", textb, MI2UFuncs::unitRebuildBlocks).minSize(36f).with(funcSetTextb);
+            t.button("@main.buttons.rebuild", textb, MI2UFuncs::unitRebuildBlocks).minSize(36f).with(funcSetTextb);
 
             //The update rate is based on button.update(), and affected by lagging
-            tt.button("Speeding", textbtoggle, SpeedController::switchUpdate).update(b -> {
+            t.button("Speeding", textbtoggle, SpeedController::switchUpdate).update(b -> {
                 b.setChecked(SpeedController.update);
                 b.setText(Core.bundle.get("main.buttons.speeding") + "x" + Strings.autoFixed(SpeedController.scl, 2));
                 SpeedController.update();
@@ -123,11 +117,9 @@ public class MI2UI extends Mindow2{
                 b.getLabel().setAlignment(Align.right);
                 b.getCells().swap(0,1);
             }).grow();
-        }).fillX();
-
-        cont.row();
-
-        cont.table(tt -> {
+        }).growX();
+        play.row();
+        play.table(tt -> {
             tt.button(b -> {
                 b.image(Core.atlas.drawable("mi2-utilities-java-ui-aicfg")).size(24f).scaling(Scaling.fit);
             }, textb, () -> {
@@ -169,11 +161,49 @@ public class MI2UI extends Mindow2{
                     }).checked(b -> mode.enable).minSize(32f).grow();
                 });
             }).grow();
+        });
+
+        var info = new Table();
+        info.table(t -> {
+            t.table(timet -> {
+                timet.label(() -> Iconc.save + Strings.formatMillis(control.saves.getTotalPlaytime())).minWidth(40f).padRight(8f);
+                timet.row();
+                timet.label(() -> Iconc.play + Strings.formatMillis(runTime)).minWidth(40f).padRight(8f).get();
+                timet.row();
+                timet.label(() -> Iconc.pause + Strings.formatMillis(realRunTime)).minWidth(40f).get();
+            });
+            t.add(mapinfo).growX();
         }).growX();
 
-        cont.row();
+        var set = new Table();
+        Events.on(MI2UEvents.FinishSettingInitEvent.class, e -> {
+            set.table(t -> {
+                t.defaults().minWidth(16f);
+                if(MI2USettings.getEntry("disableWreck") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.teamDerelict));
+                if(MI2USettings.getEntry("disableUnit") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.cancel + Iconc.unitGamma));
+                if(MI2USettings.getEntry("disableBullet") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.cancel + Iconc.unitScatheMissile));
+                if(MI2USettings.getEntry("disableBuilding") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.cancel + Iconc.blockDuo));
+                t.row();
+                if(MI2USettings.getEntry("enUnitHpBar") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.defense + Iconc.unitDagger));
+                if(MI2USettings.getEntry("enBlockHpBar") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.defense + Iconc.blockDuo));
+                if(MI2USettings.getEntry("enUnitLogic") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.units + Iconc.blockLogicProcessor));
+                if(MI2USettings.getEntry("enUnitHitbox") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.units + Iconc.box));
+                if(MI2USettings.getEntry("enUnitPath") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.teamCrux + Iconc.planet));
+            }).growX();
 
-        cont.collapser(t -> {
+            set.row();
+            set.table(t -> {
+                t.defaults().minSize(16f);
+                if(MI2USettings.getEntry("enDistributionReveal") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.zoom + Iconc.blockJunction));
+                if(MI2USettings.getEntry("drevealBridge") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.blockBridgeConveyor));
+                if(MI2USettings.getEntry("drevealJunction") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.blockJunction));
+                if(MI2USettings.getEntry("drevealUnloader") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.blockUnloader));
+                if(MI2USettings.getEntry("drevealInventory") instanceof CheckEntry ce) t.add(ce.newTextButton("" + Iconc.blockVault));
+            });
+        });
+
+        var team = new Table();
+        team.table(t -> {
             t.button("@main.buttons.createForm", textbtoggle, () -> {
                 RtsCommand.creatingFormation = !RtsCommand.creatingFormation;
             }).checked(b -> RtsCommand.creatingFormation).minSize(36f).growX().with(c -> {
@@ -206,8 +236,16 @@ public class MI2UI extends Mindow2{
                     button.addChild(label);
                 }
             }).growX();
-        }, () -> true).growX().get().setDuration(0.15f).setCollapsed(true, () -> !Vars.control.input.commandMode).setCollapsed(!Vars.control.input.commandMode);
+        }).growX();
 
+        tabs.queue(play, info, team, set);
+    }
+
+    @Override
+    public void setupCont(Table cont){
+        cont.clear();
+        cont.add(tabs);
+        tabs.toggle(tabId);
     }
 
     @Override
@@ -325,9 +363,6 @@ public class MI2UI extends Mindow2{
         settings.add(new CheckEntry("enableUpdate", "@settings.main.enableUpdate", true, b -> {
             if(b) MI2Utilities.checkUpdate();
         }));
-
-        settings.add(new CheckEntry("showUIContainer", "@settings.main.container", false, b -> container.addTo(b?Core.scene.root:null)));
-
 
         settings.add(new FieldEntry("maxSchematicSize", "@settings.main.maxSchematicSize", String.valueOf(32), TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) >= 16 && Strings.parseInt(s) <= 512, s -> Vars.maxSchematicSize = Mathf.clamp(Strings.parseInt(s), 16, 512)));
 

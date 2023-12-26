@@ -1,10 +1,6 @@
 package mi2u;
 
-import arc.*;
 import arc.func.*;
-import arc.graphics.*;
-import arc.graphics.g2d.*;
-import arc.math.*;
 import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.TextButton.*;
@@ -12,6 +8,7 @@ import arc.struct.*;
 import arc.util.*;
 import mi2u.ai.*;
 import mi2u.ui.*;
+import mi2u.ui.elements.*;
 import mindustry.ui.*;
 
 public class MI2UVars{
@@ -33,6 +30,5 @@ public class MI2UVars{
     public static EmojiMindow emojis = new EmojiMindow();
     public static CoreInfoMindow coreInfo = new CoreInfoMindow();
     public static LogicHelperMindow logicHelper = new LogicHelperMindow();
-    public static CustomContainerMindow container = new CustomContainerMindow();
     public static MinimapMindow mindowmap = new MinimapMindow();
 }

@@ -14,6 +14,7 @@ import arc.scene.ui.layout.Table;
 import arc.struct.*;
 import arc.util.*;
 import mi2u.*;
+import mi2u.ui.elements.*;
 import mindustry.gen.Iconc;
 import mindustry.logic.LCanvas;
 import mindustry.logic.LExecutor;
@@ -50,14 +51,7 @@ public class LogicHelperMindow extends Mindow2{
     public Queue<String> backups = new Queue<>(30);
 
     public LogicHelperMindow(){
-        super("@logicHelper.MI2U", "@logicHelper.help");
-    }
-
-    @Override
-    public void init(){
-        super.init();
-        //closable = false;
-        mindowName = "LogicHelper";
+        super("LogicHelper", "@logicHelper.MI2U", "@logicHelper.help");
         mode = Mode.vars;
         varsBaseTable = new Table();
         varsTable = new Table();
