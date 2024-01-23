@@ -102,7 +102,7 @@ public class MI2UI extends Mindow2{
                 SpeedController.update();
                 b.getLabel().setFontScale(1f);
                 b.getLabel().layout();
-                b.getLabel().setFontScale(Math.min((b.getWidth()- 8f - 16f - 8f) / b.getLabel().getGlyphLayout().width, 1f));
+                b.getLabel().setFontScale(Mathf.clamp((b.getWidth()- 8f - 16f - 8f) / b.getLabel().getGlyphLayout().width, 0.01f, 1f));
             }).with(funcSetTextb).with(b -> {
                 b.margin(4f);
                 b.table(bii -> {
@@ -133,7 +133,24 @@ public class MI2UI extends Mindow2{
                 popup.row();
                 popup.pane(p -> {
                     for(var mode : fullAI.modes){
-                        p.table(mode::buildConfig).growX();
+                        p.table(t -> {
+                            t.setBackground(Mindow2.gray2);
+                            t.button(b -> {
+                                b.image().grow().update(img -> img.setColor(mode.enable ? Color.acid : Color.red));
+                            }, textb, () -> {
+                                mode.enable = !mode.enable;
+                            }).size(16f);
+                            if(mode.bimg != null){
+                                t.image(mode.bimg).size(18f).scaling(Scaling.fit);
+                            }else{
+                                t.add(mode.btext).color(Color.sky).left();
+                            }
+                            t.label(() -> mode.configUIExpand ? "-" : ">").grow().get().clicked(() -> {
+                                mode.configUIExpand = !mode.configUIExpand;
+                            });
+                        }).growX().minHeight(18f).padTop(8f);
+                        p.row();
+                        p.add(new MCollapser(mode::buildConfig, true).setCollapsed(false, () -> !mode.configUIExpand)).growX();
                         p.row();
                     }
                 }).growX().update(p -> {
@@ -364,10 +381,10 @@ public class MI2UI extends Mindow2{
             if(b) MI2Utilities.checkUpdate();
         }));
 
-        settings.add(new FieldEntry("maxSchematicSize", "@settings.main.maxSchematicSize", String.valueOf(32), TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) >= 16 && Strings.parseInt(s) <= 512, s -> Vars.maxSchematicSize = Mathf.clamp(Strings.parseInt(s), 16, 512)));
+        settings.add(new FieldEntry("maxSchematicSize", "@settings.main.maxSchematicSize", String.valueOf(64), TextField.TextFieldFilter.digitsOnly, s -> Strings.parseInt(s) >= 16 && Strings.parseInt(s) <= 1919810, s -> Vars.maxSchematicSize = Mathf.clamp(Strings.parseInt(s), 16, 1919810)));
 
         //zoom in
-        settings.add(new FieldEntry("maxZoom", "@settings.main.maxZoom", String.valueOf(renderer.maxZoom), TextField.TextFieldFilter.floatsOnly, s -> Strings.parseFloat(s) > renderer.minZoom && Strings.parseFloat(s) <= 60, s -> renderer.maxZoom = Strings.parseFloat(s)));
+        settings.add(new FieldEntry("maxZoom", "@settings.main.maxZoom", String.valueOf(renderer.maxZoom), TextField.TextFieldFilter.floatsOnly, s -> Strings.parseFloat(s) > renderer.minZoom && Strings.parseFloat(s) <= 100, s -> renderer.maxZoom = Strings.parseFloat(s)));
 
         //zoom out
         settings.add(new FieldEntry("minZoom", "@settings.main.minZoom", String.valueOf(renderer.minZoom), TextField.TextFieldFilter.floatsOnly, s -> Strings.parseFloat(s) < renderer.maxZoom && Strings.parseFloat(s) > 0.01f, s -> renderer.minZoom = Strings.parseFloat(s)));
