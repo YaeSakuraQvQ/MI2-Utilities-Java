@@ -110,7 +110,7 @@ public class MinimapMindow extends Mindow2{
                         c.setAlignment(Align.right);
                     });
                     tt.row();
-                    tt.add("").color(Color.coral).with(c -> {
+                    tt.add("").color(Color.lightGray).with(c -> {
                         c.update(() -> {
                             c.setText(Strings.fixed(World.conv(Core.input.mouseWorldX()), 1) + ", "+ Strings.fixed(World.conv(Core.input.mouseWorldY()), 1) + "♐");
                             c.setFontScale(titlePane.getWidth() > 110f ? 0.8f : 0.5f);
