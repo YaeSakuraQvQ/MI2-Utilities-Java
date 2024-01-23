@@ -32,12 +32,6 @@ import mindustry.world.Tile;
 import static mi2u.MI2UVars.titleButtonSize;
 import static mindustry.Vars.*;
 
-import java.sql.Time;
-
-import javax.swing.Icon;
-
-import org.w3c.dom.css.Rect;
-
 public class MinimapMindow extends Mindow2{
     public static Minimap2 m = new Minimap2(200f);
     public static WorldFinderTable finderTable = new WorldFinderTable();
