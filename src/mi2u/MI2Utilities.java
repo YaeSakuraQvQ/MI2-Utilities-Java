@@ -48,8 +48,8 @@ public class MI2Utilities extends Mod{
             fadeBackground = new TextureRegionDrawable(Core.atlas.find("fadeBackground"));
 
             var whiteui = (TextureRegionDrawable)Tex.whiteui;
-            Mindow2.titleBarbgNormal = whiteui.tint(1f, 0.1f, 0.2f, 0.3f);
-            Mindow2.titleBarbgSnapped = whiteui.tint(1f, 0.1f, 0.2f, 0.2f);
+            Mindow2.titleBarbgNormal = whiteui.tint(0.97f, 0.66f, 0.8f, 0.8f);
+            Mindow2.titleBarbgSnapped = whiteui.tint(0.97f, 0.66f, 0.8f, 0.2f);
             Mindow2.white = whiteui.tint(1f, 1f, 1f, 1f);
             Mindow2.gray2 = whiteui.tint(0.2f, 0.2f, 0.2f, 1f);
             MI2USettings.init();
@@ -112,9 +112,9 @@ public class MI2Utilities extends Mod{
 
                 addDragMove();
 
-                this.image().color(Color.coral).growX().height(2f).row();
+                this.image().color(Color.lightGray).growX().height(2f).row();
                 this.add("@update.title").growX().with(l -> l.setFontScale(1.2f)).row();
-                this.image().color(Color.coral).growX().height(2f);
+                this.image().color(Color.lightGray).growX().height(2f);
 
                 this.row();
 
