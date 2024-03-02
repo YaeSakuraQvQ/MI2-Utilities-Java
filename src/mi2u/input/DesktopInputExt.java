@@ -7,12 +7,12 @@ import arc.scene.ui.layout.*;
 import arc.util.*;
 import mi2u.*;
 import mi2u.graphics.*;
-import mi2u.io.*;
 import mindustry.gen.*;
 import mindustry.input.*;
 import mindustry.world.blocks.*;
 
 import static arc.Core.*;
+import static mi2u.MI2UVars.*;
 import static mindustry.Vars.*;
 
 /**
@@ -61,7 +61,7 @@ public class DesktopInputExt extends DesktopInput implements InputOverwrite{
         if(!panTimer.check(0, 400)){
             panning = true;
             Core.camera.position.lerpDelta(panXY, 0.3f);
-        }else if(state.isGame() && MI2USettings.getBool("edgePanning", true)){
+        }else if(state.isGame() && mi2ui.settings.getBool("edgePanning")){
             float camSpeed = (!Core.input.keyDown(Binding.boost) ? this.panSpeed : this.panBoostSpeed) * Time.delta;
             float margin = Mathf.clamp(Math.min(Core.graphics.getWidth() * 0.5f, Core.graphics.getHeight() * 0.5f), 5f, 30f);
 
@@ -85,7 +85,7 @@ public class DesktopInputExt extends DesktopInput implements InputOverwrite{
 
         if(ctrlMove && unit != null) unit.movePref(move);
 
-        if(MI2USettings.getBool("forceTapTile", false) && Core.input.keyTap(Binding.select) && !Core.scene.hasMouse()){
+        if(mi2ui.settings.getBool("forceTapTile") && Core.input.keyTap(Binding.select) && !Core.scene.hasMouse()){
             if(player.dead()){
                 var build = world.buildWorld(Core.input.mouseWorldX(), Core.input.mouseWorldY());
                 InputUtils.forceTap(build, true);

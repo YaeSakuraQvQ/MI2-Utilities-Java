@@ -6,10 +6,10 @@ import arc.math.*;
 import arc.math.geom.*;
 import arc.util.*;
 import mi2u.*;
-import mi2u.io.*;
 import mindustry.gen.*;
 import mindustry.input.*;
 
+import static mi2u.MI2UVars.*;
 import static mindustry.Vars.*;
 
 public class MobileInputExt extends MobileInput implements InputOverwrite{
@@ -55,7 +55,7 @@ public class MobileInputExt extends MobileInput implements InputOverwrite{
 
     @Override
     public boolean tap(float x, float y, int count, KeyCode button){
-        if(MI2USettings.getBool("forceTapTile", false) && Core.input.keyTap(Binding.select) && !Core.scene.hasMouse()){
+        if(mi2ui.settings.getBool("forceTapTile") && Core.input.keyTap(Binding.select) && !Core.scene.hasMouse()){
             var build = world.buildWorld(Core.input.mouseWorldX(), Core.input.mouseWorldY());
             InputUtils.forceTap(build, player.dead());
         }

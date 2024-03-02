@@ -40,7 +40,7 @@ public class ModifyFuncs{
     }
 
     public static void modifyVanillaBlockBars(){
-        if(!MI2USettings.getBool("modifyBlockBars")) return;
+        if(!mi2ui.settings.getBool("modifyBlockBars")) return;
         content.blocks().each(block -> {
             addBarToBlock(block, "health", e -> new Bar(() -> Core.bundle.format("stat.health") + ":" + Strings.autoFixed(e.health(), 3) + "(" + Strings.autoFixed(e.health * 100 / e.maxHealth, 2) + "%)", () -> Pal.health, e::healthf));
 
@@ -123,10 +123,10 @@ public class ModifyFuncs{
     }
 
     public static void betterTopTable(){
-        if(MI2USettings.getBool("modifyTopTable", false)){
+        if(mi2ui.settings.getBool("replaceTopTable")){
             Table topTable = Reflect.get(ui.hudfrag.blockfrag, "topTable");
             if(topTable == null){
-                Log.infoTag("MI2U-Modify", "failed to replace info top-table");
+                Log.infoTag("MI2U", "failed to replace info top-table");
                 return;
             }
 
@@ -134,7 +134,7 @@ public class ModifyFuncs{
             topTable.clearChildren();
 
             //HoverTopTable是完全和方块info共用table的，所以无法将原版info拆出来做浮窗。
-            if(!MI2USettings.getBool("topTableFollowMouse", false)){
+            if(!mi2ui.settings.getBool("modTopTableFollowMouse")){
                 topTable.add(HoverTopTable.hoverInfo).growX();
                 HoverTopTable.hoverInfo.touchable = Touchable.enabled;
             }else{
@@ -162,56 +162,60 @@ public class ModifyFuncs{
             });
         }
 
-        if(MI2USettings.getBool("modifyBlockSelectTable", false)){
+        int height = mi2ui.settings.getInt("blockSelectTableHeight", 194);
+        if(height != 194){
             Table blockCatTable = MI2Utils.getValue(ui.hudfrag.blockfrag, "blockCatTable");
 
-            ((Table)blockCatTable.getCells().first().get()).getCells().first().height(Mathf.clamp(MI2USettings.getInt("blockSelectTableHeight", 194), 50, 1000));
-            blockCatTable.getCells().get(1).height(Mathf.clamp(MI2USettings.getInt("blockSelectTableHeight", 194) + 52, 50, 1000));
+            ((Table)blockCatTable.getCells().first().get()).getCells().first().height(Mathf.clamp(mi2ui.settings.getInt("blockSelectTableHeight", 194), 50, 1000));
+            blockCatTable.getCells().get(1).height(Mathf.clamp(height + 52, 50, 1000));
         }
     }
 
     public static void settingsMenuDialog(){
-        ui.settings.addCategory("@mindow2.settings.title", new TextureRegionDrawable(new TextureRegion(MI2Utilities.MOD.iconTexture)), st ->{
-            st.add("@mindow2.settings.allIntro");
-            st.row();
-            st.pane(t -> {
-                t.name = "Mindow Help";
-                for(var m : mindow2s){
-                    if(!m.mindowName.equals("")) t.button(Iconc.infoCircle + Core.bundle.get(m.titleText.substring(1)), textb, m::showHelp).with(funcSetTextb).pad(4f);
-                }
-            }).with(p -> {
-                p.setForceScroll(true, false);
-            }).growX();
-            st.row();
-            st.table(t -> {
-                int index = 0;
-                for(var entry : MI2USettings.entries){
-                    t.add("" + ++index).size(32f).color(Color.gray);
-                    t.table(entry::build).growX();
-                    t.row();
-                }
-            });
-            st.row();
-            st.button("@mi2u.settings.cleanUp", textb, () -> {
-                var dialog = new BaseDialog("@mi2u.settings.cleanUp");
-                dialog.addCloseButton();
-                dialog.buttons.button("@clear", Icon.refresh, () -> ui.showConfirm("@mi2u.settings.removeAllConf", MI2USettings.map::clear));
-                dialog.cont.pane(t -> {
-                    MI2USettings.map.each((name, setting) -> {
-                        t.button("" + Iconc.cancel, textb, null).size(24f).with(b -> {
-                            b.clicked(() -> ui.showConfirm(Core.bundle.get("mi2u.settings.removeConf") + name, () -> {
-                                MI2USettings.map.remove(name);
-                                MI2USettings.modified = true;
-                                b.setDisabled(true);
-                            }));
+        ui.settings.addCategory("@settings.meta.category", new TextureRegionDrawable(new TextureRegion(MI2Utilities.MOD.iconTexture)), st ->{
+            Table cont = new Table();
+            mi2ui.settings.buildList(cont);
+            st.table(buttons -> {
+                buttons.defaults().uniform().height(64f).grow();
+                mindow2s.each(m -> buttons.button(m.titleText, () -> m.settings.buildList(cont)));
+                buttons.button("@settings.meta.oldVersionButton", () -> {
+                    var dialog = new BaseDialog("@settings.meta.oldVersionButton");
+                    dialog.addCloseButton();
+                    dialog.cont.pane(bp -> {
+                        MI2USettings.map.each((name, setting) -> {
+                            bp.button(b -> {
+                                b.add(name).growX().row();
+                                b.labelWrap(setting.get().substring(0, Math.min(200, setting.get().length()))).maxHeight(100f).growX();
+                            }, () -> Core.app.setClipboardText(setting.get())).growX();
+                            bp.row();
                         });
-                        t.labelWrap(name).width(200f);
-                        t.add(setting.get()).width(200f);
-                        t.row();
-                    });
-                }).growY();
-                dialog.show();
-            }).growX().height(64f);
+                    }).growY().minWidth(600f).row();
+                    dialog.cont.labelWrap("@settings.meta.oldVersion.tip").minWidth(600f).pad(4f).color(Color.acid);
+                    dialog.show();
+                });
+            }).width(600f);
+
+            st.row();
+
+            st.image().height(2f).growX().color(Pal.accent).padBottom(8f).padTop(8f);
+
+            st.row();
+
+            st.add(cont).growX();
+
+            mindow2s.each(m -> {
+                st.addChild(new Table(){
+                    {
+                        m.settings.buildDescription(this);
+                        touchable = Touchable.disabled;
+                        update(() -> {
+                            st.stageToLocalCoordinates(MI2UTmp.v3.set(Core.input.mouse()));
+                            this.setPosition(MI2UTmp.v3.x, MI2UTmp.v3.y);
+                        });
+                    }
+                });
+            });
+
         });
     }
 }
